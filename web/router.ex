@@ -13,6 +13,12 @@ defmodule Meshi.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/api", Meshi do
+    pipe_through :api # Use the default api stack
+
+    resources "/restaurants", RestaurantController, only: [:index, :show, :create, :update]
+  end
+
   scope "/", Meshi do
     pipe_through :browser # Use the default browser stack
 
