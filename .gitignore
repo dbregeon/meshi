@@ -24,4 +24,4 @@ erl_crash.dump
 /config/prod.secret.exs
 
 # Elm build artefacts
-/elm/elm-stuff
+/web/elm/elm-stuff
