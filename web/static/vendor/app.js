@@ -9330,7 +9330,11 @@ var _user$project$Components_CreateRestaurant$view = function (model) {
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CreateRestaurant$Name),
-							_1: {ctor: '[]'}
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$value(model.name),
+								_1: {ctor: '[]'}
+							}
 						}
 					}
 				},
@@ -9348,7 +9352,11 @@ var _user$project$Components_CreateRestaurant$view = function (model) {
 							_1: {
 								ctor: '::',
 								_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CreateRestaurant$Url),
-								_1: {ctor: '[]'}
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$value(model.url),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					},

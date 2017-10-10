@@ -1,7 +1,7 @@
 module Components.CreateRestaurant exposing (..)
 
 import Html exposing (Html, text, input, div, button)
-import Html.Attributes exposing (class, placeholder, type_)
+import Html.Attributes exposing (class, placeholder, type_, value)
 import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
@@ -73,7 +73,7 @@ initialModel =
 view : Model -> Html Msg
 view model =
    div []
-    [ input [ type_ "name", placeholder "Name", onInput Name ] []
-    , input [ type_ "url", placeholder "Url", onInput Url ] []
+    [ input [ type_ "name", placeholder "Name", onInput Name, value model.name ] []
+    , input [ type_ "url", placeholder "Url", onInput Url, value model.url ] []
     , button [ onClick (Create model), class "btn btn-primary" ] [ text "Add" ]
     ]
