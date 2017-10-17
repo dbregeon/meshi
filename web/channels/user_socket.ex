@@ -3,6 +3,8 @@ defmodule Meshi.UserSocket do
 
   ## Channels
   # channel "room:*", Meshi.RoomChannel
+  channel "restaurants", Meshi.RestaurantChannel
+
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket,

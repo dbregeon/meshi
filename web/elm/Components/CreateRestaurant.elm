@@ -6,13 +6,13 @@ import Html.Events exposing (onClick, onInput)
 import Http
 import Json.Decode as Decode
 import Json.Encode as Encode
-import Restaurant
+import Components.Restaurant as Restaurant
+import Components.RestaurantList as RestaurantList
 
 type alias Model = Restaurant.Model
 
 type Msg
-  = NoOp
-  | Name String
+  = Name String
   | Url String
   | Create Model
   | CreateResult (Result Http.Error Model)
@@ -20,8 +20,6 @@ type Msg
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    NoOp ->
-      (model, Cmd.none)
     Name name ->
       ({ model | name = name }, Cmd.none)
     Url url ->

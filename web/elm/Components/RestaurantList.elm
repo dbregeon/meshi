@@ -7,21 +7,19 @@ import Http
 import Json.Decode as Decode
 import Debug
 import List
-import Restaurant
+import Components.Restaurant as Restaurant
 
 type alias Model =
   { restaurants: List Restaurant.Model }
 
 type Msg
-  = NoOp
-  | Fetch
+  = Fetch
   | UpdateRestaurants (Result Http.Error (List Restaurant.Model))
+  | AddRestaurant Restaurant.Model
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    NoOp ->
-      (model, Cmd.none)
     Fetch ->
       (model, fetchRestaurants)
     UpdateRestaurants result ->
@@ -31,6 +29,8 @@ update msg model =
       Err error ->
         Debug.log (toString error)
         (model, Cmd.none)
+    AddRestaurant restaurant ->
+        ( { model | restaurants = restaurant :: model.restaurants }, Cmd.none )
 
 -- HTTP calls
 fetchRestaurants : Cmd Msg

@@ -20,9 +20,14 @@ defmodule Meshi.RestaurantController do
     changeset = Restaurant.changeset(%Restaurant{posted_on:  DateTime.utc_now, posted_by: "Test"}, params)
     case Repo.insert(changeset) do
       {:ok, restaurant} ->
+       Meshi.Endpoint.broadcast(
+        "restaurants",
+        "change",
+        restaurant
+       )
        conn
          |> put_status(:created)
-         |> render "show.json", restaurant: restaurant
+         |> render("show.json", restaurant: restaurant)
       {:error, changeset} ->
         Logger.debug "Failed to insert: #{inspect(changeset)}"
         json conn |> put_status(:bad_request), %{errors: ["unable to create restaurant"] }

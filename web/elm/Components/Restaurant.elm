@@ -1,4 +1,4 @@
-module Restaurant exposing (view, Model)
+module Components.Restaurant exposing (view, Model)
 
 import Html exposing (Html, span, strong, em, a, text)
 import Html.Attributes exposing (class, href)

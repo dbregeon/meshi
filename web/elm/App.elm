@@ -2,32 +2,62 @@ module App exposing (..)
 
 import Html exposing (Html, text, div)
 import Html.Attributes exposing (class)
+import Phoenix.Socket
+import Phoenix.Channel
+import Phoenix.Push
+import Debug
+import Task
+import Json.Encode as Encode
+import Json.Decode as Decode
 
 import Components.RestaurantList as RestaurantList
 import Components.CreateRestaurant as CreateRestaurant
-
+import Components.Restaurant as Restaurant
 
 -- MODEL
+type alias Flags =
+    { socketUrl : String }
 
 type alias Model =
   { restaurantListModel : RestaurantList.Model
-  , createRestaurantModel : CreateRestaurant.Model }
-
-initialModel : Model
-initialModel =
-  { restaurantListModel = RestaurantList.initialModel
-  , createRestaurantModel = CreateRestaurant.initialModel }
-
-init : (Model, Cmd Msg)
-init =
-  ( initialModel, Cmd.none )
-
--- UPDATE
+  , createRestaurantModel : CreateRestaurant.Model
+  , phxSocket : Phoenix.Socket.Socket Msg }
 
 type Msg
   = RestaurantListMsg RestaurantList.Msg
-  | CreateRestaurantMsg CreateRestaurant.Msg
+    | CreateRestaurantMsg CreateRestaurant.Msg
+    | NewMessage Encode.Value
+    | PhoenixMsg (Phoenix.Socket.Msg Msg)
 
+type alias SendMsg =
+      { topic : String
+      , event: String
+      , payload : String
+      , ref : String
+      }
+
+initialModel : Flags -> Model
+initialModel flags =
+  { restaurantListModel = RestaurantList.initialModel
+  , createRestaurantModel = CreateRestaurant.initialModel
+  , phxSocket =  initPhxSocket flags }
+
+initPhxSocket : Flags -> Phoenix.Socket.Socket Msg
+initPhxSocket flags =
+    Phoenix.Socket.init flags.socketUrl
+        |> Phoenix.Socket.withDebug
+        |> Phoenix.Socket.on "change" "restaurants" NewMessage
+
+init : Flags -> (Model, Cmd Msg)
+init flags =
+  let
+    model = initialModel flags
+    channel = Phoenix.Channel.init "restaurants"
+    ( phxSocket, phxCmd ) = Phoenix.Socket.join channel model.phxSocket
+  in
+  ( { model | phxSocket = phxSocket } , Cmd.map PhoenixMsg phxCmd )
+
+-- UPDATE
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -38,10 +68,33 @@ update msg model =
     CreateRestaurantMsg restaurantMsg ->
         let (updatedModel, cmd) = CreateRestaurant.update restaurantMsg model.createRestaurantModel
         in ( { model | createRestaurantModel = updatedModel }, Cmd.map CreateRestaurantMsg cmd )
+    NewMessage raw ->
+      case Decode.decodeValue RestaurantList.decodeRestaurantData raw of
+        Ok restaurant ->
+          Debug.log (toString restaurant)
+          update ( RestaurantListMsg ( RestaurantList.AddRestaurant restaurant ) ) model
+        Err error ->
+          Debug.log (toString error)
+          model ! []
+    PhoenixMsg msg ->
+      let
+        ( phxSocket, phxCmd ) = Phoenix.Socket.update msg model.phxSocket
+      in
+        ( { model | phxSocket = phxSocket } , Cmd.map PhoenixMsg phxCmd )
+
+encoder : SendMsg -> String
+encoder m =
+    Encode.object
+        [ ("topic", Encode.string m.topic)
+        , ("event", Encode.string m.event)
+        , ("payload", Encode.string m.payload)
+        , ("ref", Encode.string m.ref)
+        ]
+    |> Encode.encode 0
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  Phoenix.Socket.listen model.phxSocket PhoenixMsg
 
 -- VIEW
 
@@ -54,11 +107,11 @@ view model =
 
 -- MAIN
 
-main : Program Never Model Msg
+main : Program Flags Model Msg
 main =
-  Html.program
-    { init = init
-    , view = view
-    , update = update
-    , subscriptions = subscriptions
-    }
+  Html.programWithFlags
+        { init = init
+        , view = view
+        , update = update
+        , subscriptions = subscriptions
+        }
