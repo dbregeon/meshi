@@ -42,7 +42,7 @@ exports.config = {
     // Dependencies and current project directories to watch
     watched: [
       "web/static",
-      "web/elm/src",
+      "elm/src",
       "test/static"
     ],
 
@@ -53,7 +53,7 @@ exports.config = {
   // Configure your plugins
   plugins: {
     elmBrunch: {
-      elmFolder: "web/elm/src",
+      elmFolder: "elm/src",
       mainModules: ["App.elm"],
       outputFolder: "../static/vendor"
     },
