@@ -8,20 +8,19 @@ import Json.Decode as Decode
 import Debug
 import List
 import Components.Restaurant as Restaurant
+import Components.Ports as Ports
 
 type alias Model =
   { restaurants: List Restaurant.Model }
 
 type Msg
-  = Fetch
-  | UpdateRestaurants (Result Http.Error (List Restaurant.Model))
+  = UpdateRestaurants (Result Http.Error (List Restaurant.Model))
   | AddRestaurant Restaurant.Model
+  | UpdateMap Restaurant.Model
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Fetch ->
-      (model, fetchRestaurants)
     UpdateRestaurants result ->
      case result of
       Ok restaurantList ->
@@ -31,6 +30,8 @@ update msg model =
         (model, Cmd.none)
     AddRestaurant restaurant ->
         ( { model | restaurants = restaurant :: model.restaurants }, Cmd.none )
+    UpdateMap restaurant ->
+       ( model , Ports.googleMap restaurant.url )
 
 -- HTTP calls
 fetchRestaurants : Cmd Msg
@@ -59,11 +60,11 @@ decodeRestaurantData =
     (Decode.field "posted_by" Decode.string)
     (Decode.field "posted_on" Decode.string)
 
-renderRestaurant : Restaurant.Model -> Html a
+renderRestaurant : Restaurant.Model -> Html Msg
 renderRestaurant restaurant =
-  li [ ] [ Restaurant.view restaurant ]
+  li [ onClick (UpdateMap restaurant) ] [ Restaurant.view restaurant ]
 
-renderRestaurants : Model -> List (Html a)
+renderRestaurants : Model -> List (Html Msg)
 renderRestaurants model =
    List.map renderRestaurant model.restaurants
 
@@ -75,5 +76,4 @@ view : Model -> Html Msg
 view model =
   div [ class "restaurant-list" ] [
     h2 [] [ text "Restaurant List" ],
-    button [ onClick Fetch, class "btn btn-primary" ] [ text "Fetch Restaurants" ],
     ul [] (renderRestaurants model)]

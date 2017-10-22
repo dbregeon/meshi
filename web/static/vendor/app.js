@@ -10340,21 +10340,15 @@ var _user$project$Components_Restaurant$Model = F4(
 		return {name: a, url: b, postedBy: c, postedOn: d};
 	});
 
+var _user$project$Components_Ports$googleMap = _elm_lang$core$Native_Platform.outgoingPort(
+	'googleMap',
+	function (v) {
+		return v;
+	});
+var _user$project$Components_Ports$dispatchCreate = _elm_lang$core$Native_Platform.incomingPort('dispatchCreate', _elm_lang$core$Json_Decode$string);
+
 var _user$project$Components_RestaurantList$initialModel = {
 	restaurants: {ctor: '[]'}
-};
-var _user$project$Components_RestaurantList$renderRestaurant = function (restaurant) {
-	return A2(
-		_elm_lang$html$Html$li,
-		{ctor: '[]'},
-		{
-			ctor: '::',
-			_0: _user$project$Components_Restaurant$view(restaurant),
-			_1: {ctor: '[]'}
-		});
-};
-var _user$project$Components_RestaurantList$renderRestaurants = function (model) {
-	return A2(_elm_lang$core$List$map, _user$project$Components_RestaurantList$renderRestaurant, model.restaurants);
 };
 var _user$project$Components_RestaurantList$decodeRestaurantData = A5(
 	_elm_lang$core$Json_Decode$map4,
@@ -10375,25 +10369,10 @@ var _user$project$Components_RestaurantList$decodeRestaurantFetch = A2(
 var _user$project$Components_RestaurantList$Model = function (a) {
 	return {restaurants: a};
 };
-var _user$project$Components_RestaurantList$AddRestaurant = function (a) {
-	return {ctor: 'AddRestaurant', _0: a};
-};
-var _user$project$Components_RestaurantList$UpdateRestaurants = function (a) {
-	return {ctor: 'UpdateRestaurants', _0: a};
-};
-var _user$project$Components_RestaurantList$fetchRestaurants = function () {
-	var url = '/api/restaurants';
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$Components_RestaurantList$UpdateRestaurants,
-		A2(_elm_lang$http$Http$get, url, _user$project$Components_RestaurantList$decodeRestaurantFetch));
-}();
 var _user$project$Components_RestaurantList$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
 		switch (_p0.ctor) {
-			case 'Fetch':
-				return {ctor: '_Tuple2', _0: model, _1: _user$project$Components_RestaurantList$fetchRestaurants};
 			case 'UpdateRestaurants':
 				var _p1 = _p0._0;
 				if (_p1.ctor === 'Ok') {
@@ -10408,7 +10387,7 @@ var _user$project$Components_RestaurantList$update = F2(
 						_elm_lang$core$Basics$toString(_p1._0),
 						{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none});
 				}
-			default:
+			case 'AddRestaurant':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
@@ -10418,9 +10397,35 @@ var _user$project$Components_RestaurantList$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: model,
+					_1: _user$project$Components_Ports$googleMap(_p0._0.url)
+				};
 		}
 	});
-var _user$project$Components_RestaurantList$Fetch = {ctor: 'Fetch'};
+var _user$project$Components_RestaurantList$UpdateMap = function (a) {
+	return {ctor: 'UpdateMap', _0: a};
+};
+var _user$project$Components_RestaurantList$renderRestaurant = function (restaurant) {
+	return A2(
+		_elm_lang$html$Html$li,
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Events$onClick(
+				_user$project$Components_RestaurantList$UpdateMap(restaurant)),
+			_1: {ctor: '[]'}
+		},
+		{
+			ctor: '::',
+			_0: _user$project$Components_Restaurant$view(restaurant),
+			_1: {ctor: '[]'}
+		});
+};
+var _user$project$Components_RestaurantList$renderRestaurants = function (model) {
+	return A2(_elm_lang$core$List$map, _user$project$Components_RestaurantList$renderRestaurant, model.restaurants);
+};
 var _user$project$Components_RestaurantList$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
@@ -10442,32 +10447,26 @@ var _user$project$Components_RestaurantList$view = function (model) {
 			_1: {
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$button,
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html_Events$onClick(_user$project$Components_RestaurantList$Fetch),
-						_1: {
-							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$class('btn btn-primary'),
-							_1: {ctor: '[]'}
-						}
-					},
-					{
-						ctor: '::',
-						_0: _elm_lang$html$Html$text('Fetch Restaurants'),
-						_1: {ctor: '[]'}
-					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$ul,
-						{ctor: '[]'},
-						_user$project$Components_RestaurantList$renderRestaurants(model)),
-					_1: {ctor: '[]'}
-				}
+					_elm_lang$html$Html$ul,
+					{ctor: '[]'},
+					_user$project$Components_RestaurantList$renderRestaurants(model)),
+				_1: {ctor: '[]'}
 			}
 		});
 };
+var _user$project$Components_RestaurantList$AddRestaurant = function (a) {
+	return {ctor: 'AddRestaurant', _0: a};
+};
+var _user$project$Components_RestaurantList$UpdateRestaurants = function (a) {
+	return {ctor: 'UpdateRestaurants', _0: a};
+};
+var _user$project$Components_RestaurantList$fetchRestaurants = function () {
+	var url = '/api/restaurants';
+	return A2(
+		_elm_lang$http$Http$send,
+		_user$project$Components_RestaurantList$UpdateRestaurants,
+		A2(_elm_lang$http$Http$get, url, _user$project$Components_RestaurantList$decodeRestaurantFetch));
+}();
 
 var _user$project$Components_CreateRestaurant$initialModel = {name: '', url: '', postedBy: '', postedOn: ''};
 var _user$project$Components_CreateRestaurant$decodeRestaurantData = A5(
@@ -10712,6 +10711,12 @@ var _user$project$App$initialModel = function (flags) {
 		phxSocket: _user$project$App$initPhxSocket(flags)
 	};
 };
+var _user$project$App$CreateRestaurantMsg = function (a) {
+	return {ctor: 'CreateRestaurantMsg', _0: a};
+};
+var _user$project$App$RestaurantListMsg = function (a) {
+	return {ctor: 'RestaurantListMsg', _0: a};
+};
 var _user$project$App$init = function (flags) {
 	var channel = _fbonetti$elm_phoenix_socket$Phoenix_Channel$init('restaurants');
 	var model = _user$project$App$initialModel(flags);
@@ -10723,72 +10728,73 @@ var _user$project$App$init = function (flags) {
 		_0: _elm_lang$core$Native_Utils.update(
 			model,
 			{phxSocket: phxSocket}),
-		_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$PhoenixMsg, phxCmd)
+		_1: _elm_lang$core$Platform_Cmd$batch(
+			{
+				ctor: '::',
+				_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$PhoenixMsg, phxCmd),
+				_1: {
+					ctor: '::',
+					_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$RestaurantListMsg, _user$project$Components_RestaurantList$fetchRestaurants),
+					_1: {ctor: '[]'}
+				}
+			})
 	};
-};
-var _user$project$App$CreateRestaurantMsg = function (a) {
-	return {ctor: 'CreateRestaurantMsg', _0: a};
-};
-var _user$project$App$RestaurantListMsg = function (a) {
-	return {ctor: 'RestaurantListMsg', _0: a};
 };
 var _user$project$App$update = F2(
 	function (msg, model) {
-		var _p1 = msg;
-		switch (_p1.ctor) {
-			case 'RestaurantListMsg':
-				var _p2 = A2(_user$project$Components_RestaurantList$update, _p1._0, model.restaurantListModel);
-				var updatedModel = _p2._0;
-				var cmd = _p2._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{restaurantListModel: updatedModel}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$RestaurantListMsg, cmd)
-				};
-			case 'CreateRestaurantMsg':
-				var _p3 = A2(_user$project$Components_CreateRestaurant$update, _p1._0, model.createRestaurantModel);
-				var updatedModel = _p3._0;
-				var cmd = _p3._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{createRestaurantModel: updatedModel}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$CreateRestaurantMsg, cmd)
-				};
-			case 'NewMessage':
-				var _p4 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Components_RestaurantList$decodeRestaurantData, _p1._0);
-				if (_p4.ctor === 'Ok') {
-					var _p5 = _p4._0;
-					return A4(
-						_elm_lang$core$Debug$log,
-						_elm_lang$core$Basics$toString(_p5),
-						_user$project$App$update,
-						_user$project$App$RestaurantListMsg(
-							_user$project$Components_RestaurantList$AddRestaurant(_p5)),
-						model);
-				} else {
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(
-							_elm_lang$core$Debug$log,
-							_elm_lang$core$Basics$toString(_p4._0),
-							model),
-						{ctor: '[]'});
-				}
-			default:
-				var _p6 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p1._0, model.phxSocket);
-				var phxSocket = _p6._0;
-				var phxCmd = _p6._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{phxSocket: phxSocket}),
-					_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$PhoenixMsg, phxCmd)
-				};
+		update:
+		while (true) {
+			var _p1 = msg;
+			switch (_p1.ctor) {
+				case 'RestaurantListMsg':
+					var _p2 = A2(_user$project$Components_RestaurantList$update, _p1._0, model.restaurantListModel);
+					var updatedModel = _p2._0;
+					var cmd = _p2._1;
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{restaurantListModel: updatedModel}),
+						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$RestaurantListMsg, cmd)
+					};
+				case 'CreateRestaurantMsg':
+					var _p3 = A2(_user$project$Components_CreateRestaurant$update, _p1._0, model.createRestaurantModel);
+					var updatedModel = _p3._0;
+					var cmd = _p3._1;
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{createRestaurantModel: updatedModel}),
+						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$CreateRestaurantMsg, cmd)
+					};
+				case 'NewMessage':
+					var _p4 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Components_RestaurantList$decodeRestaurantData, _p1._0);
+					if (_p4.ctor === 'Ok') {
+						var _v2 = _user$project$App$RestaurantListMsg(
+							_user$project$Components_RestaurantList$AddRestaurant(_p4._0)),
+							_v3 = model;
+						msg = _v2;
+						model = _v3;
+						continue update;
+					} else {
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							{ctor: '[]'});
+					}
+				default:
+					var _p5 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p1._0, model.phxSocket);
+					var phxSocket = _p5._0;
+					var phxCmd = _p5._1;
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{phxSocket: phxSocket}),
+						_1: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$PhoenixMsg, phxCmd)
+					};
+			}
 		}
 	});
 var _user$project$App$view = function (model) {

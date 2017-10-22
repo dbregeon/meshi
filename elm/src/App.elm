@@ -1,4 +1,4 @@
-module App exposing (..)
+port module App exposing (..)
 
 import Html exposing (Html, text, div)
 import Html.Attributes exposing (class)
@@ -29,6 +29,7 @@ type Msg
     | NewMessage Encode.Value
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
 
+
 type alias SendMsg =
       { topic : String
       , event: String
@@ -55,7 +56,7 @@ init flags =
     channel = Phoenix.Channel.init "restaurants"
     ( phxSocket, phxCmd ) = Phoenix.Socket.join channel model.phxSocket
   in
-  ( { model | phxSocket = phxSocket } , Cmd.map PhoenixMsg phxCmd )
+    ( { model | phxSocket = phxSocket } , Cmd.batch [ Cmd.map PhoenixMsg phxCmd, Cmd.map RestaurantListMsg RestaurantList.fetchRestaurants ])
 
 -- UPDATE
 
@@ -71,10 +72,8 @@ update msg model =
     NewMessage raw ->
       case Decode.decodeValue RestaurantList.decodeRestaurantData raw of
         Ok restaurant ->
-          Debug.log (toString restaurant)
           update ( RestaurantListMsg ( RestaurantList.AddRestaurant restaurant ) ) model
         Err error ->
-          Debug.log (toString error)
           model ! []
     PhoenixMsg msg ->
       let
@@ -94,7 +93,7 @@ encoder m =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Phoenix.Socket.listen model.phxSocket PhoenixMsg
+   Phoenix.Socket.listen model.phxSocket PhoenixMsg
 
 -- VIEW
 
