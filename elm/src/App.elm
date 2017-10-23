@@ -1,7 +1,7 @@
 port module App exposing (..)
 
 import Html exposing (Html, text, div)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, id)
 import Phoenix.Socket
 import Phoenix.Channel
 import Phoenix.Push
@@ -13,6 +13,7 @@ import Json.Decode as Decode
 import Components.RestaurantList as RestaurantList
 import Components.CreateRestaurant as CreateRestaurant
 import Components.Restaurant as Restaurant
+import Components.Ports as Ports
 
 -- MODEL
 type alias Flags =
@@ -56,7 +57,8 @@ init flags =
     channel = Phoenix.Channel.init "restaurants"
     ( phxSocket, phxCmd ) = Phoenix.Socket.join channel model.phxSocket
   in
-    ( { model | phxSocket = phxSocket } , Cmd.batch [ Cmd.map PhoenixMsg phxCmd, Cmd.map RestaurantListMsg RestaurantList.fetchRestaurants ])
+    ( { model | phxSocket = phxSocket }
+    , Cmd.batch [ Cmd.map PhoenixMsg phxCmd, Cmd.map RestaurantListMsg RestaurantList.fetchRestaurants, (Ports.ready "ready") ])
 
 -- UPDATE
 
@@ -100,8 +102,11 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div [ class "elm-app" ]
-   [ Html.map RestaurantListMsg (RestaurantList.view model.restaurantListModel)
-   , Html.map CreateRestaurantMsg (CreateRestaurant.view model.createRestaurantModel) ]
+   [ div [ class "restaurants-panel"]
+      [ div [class "restaurant-master" ]
+        [ Html.map RestaurantListMsg (RestaurantList.view model.restaurantListModel)
+        , Html.map CreateRestaurantMsg (CreateRestaurant.view model.createRestaurantModel) ]
+      , div [id "map", class "restaurant-map"] [] ] ]
 
 
 -- MAIN

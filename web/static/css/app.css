@@ -1,1 +1,26 @@
 /* This file is for your main application css. */
+.restaurants-panel {
+  height:400px;
+}
+
+.restaurant-master {
+  height: 100%;
+  width: 30%;
+  float:left;
+}
+
+.restaurant-list {
+  overflow:hidden;
+  overflow-y:scroll;
+  height: 75%;
+}
+
+.restaurant-create {
+  height: 25%;
+}
+
+.restaurant-map {
+  float:right;
+  height: 100%;
+  width: 70%;
+}

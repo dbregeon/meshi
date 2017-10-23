@@ -70,8 +70,8 @@ initialModel =
 
 view : Model -> Html Msg
 view model =
-   div []
-    [ input [ type_ "name", placeholder "Name", onInput Name, value model.name ] []
-    , input [ type_ "url", placeholder "Url", onInput Url, value model.url ] []
+   div [ class "restaurant-create form-inline" ]
+    [ input [ class "form-control", type_ "name", placeholder "Name", onInput Name, value model.name ] []
+    , input [ class "form-control", type_ "url", placeholder "Url", onInput Url, value model.url ] []
     , button [ onClick (Create model), class "btn btn-primary" ] [ text "Add" ]
     ]

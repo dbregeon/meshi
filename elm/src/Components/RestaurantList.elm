@@ -1,7 +1,7 @@
 module Components.RestaurantList exposing (..)
 
 import Html exposing (Html, text, ul, li, div, h2, button)
-import Html.Attributes exposing (class)
+import Html.Attributes exposing (class, id)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode as Decode
@@ -74,6 +74,4 @@ initialModel =
 
 view : Model -> Html Msg
 view model =
-  div [ class "restaurant-list" ] [
-    h2 [] [ text "Restaurant List" ],
-    ul [] (renderRestaurants model)]
+ ul [ class "restaurant-list" ] (renderRestaurants model)

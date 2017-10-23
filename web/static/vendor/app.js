@@ -10345,7 +10345,11 @@ var _user$project$Components_Ports$googleMap = _elm_lang$core$Native_Platform.ou
 	function (v) {
 		return v;
 	});
-var _user$project$Components_Ports$dispatchCreate = _elm_lang$core$Native_Platform.incomingPort('dispatchCreate', _elm_lang$core$Json_Decode$string);
+var _user$project$Components_Ports$ready = _elm_lang$core$Native_Platform.outgoingPort(
+	'ready',
+	function (v) {
+		return v;
+	});
 
 var _user$project$Components_RestaurantList$initialModel = {
 	restaurants: {ctor: '[]'}
@@ -10428,31 +10432,13 @@ var _user$project$Components_RestaurantList$renderRestaurants = function (model)
 };
 var _user$project$Components_RestaurantList$view = function (model) {
 	return A2(
-		_elm_lang$html$Html$div,
+		_elm_lang$html$Html$ul,
 		{
 			ctor: '::',
 			_0: _elm_lang$html$Html_Attributes$class('restaurant-list'),
 			_1: {ctor: '[]'}
 		},
-		{
-			ctor: '::',
-			_0: A2(
-				_elm_lang$html$Html$h2,
-				{ctor: '[]'},
-				{
-					ctor: '::',
-					_0: _elm_lang$html$Html$text('Restaurant List'),
-					_1: {ctor: '[]'}
-				}),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$ul,
-					{ctor: '[]'},
-					_user$project$Components_RestaurantList$renderRestaurants(model)),
-				_1: {ctor: '[]'}
-			}
-		});
+		_user$project$Components_RestaurantList$renderRestaurants(model));
 };
 var _user$project$Components_RestaurantList$AddRestaurant = function (a) {
 	return {ctor: 'AddRestaurant', _0: a};
@@ -10566,24 +10552,32 @@ var _user$project$Components_CreateRestaurant$Name = function (a) {
 var _user$project$Components_CreateRestaurant$view = function (model) {
 	return A2(
 		_elm_lang$html$Html$div,
-		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html_Attributes$class('restaurant-create form-inline'),
+			_1: {ctor: '[]'}
+		},
 		{
 			ctor: '::',
 			_0: A2(
 				_elm_lang$html$Html$input,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$type_('name'),
+					_0: _elm_lang$html$Html_Attributes$class('form-control'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$placeholder('Name'),
+						_0: _elm_lang$html$Html_Attributes$type_('name'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CreateRestaurant$Name),
+							_0: _elm_lang$html$Html_Attributes$placeholder('Name'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$value(model.name),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CreateRestaurant$Name),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$value(model.name),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}
@@ -10595,17 +10589,21 @@ var _user$project$Components_CreateRestaurant$view = function (model) {
 					_elm_lang$html$Html$input,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$type_('url'),
+						_0: _elm_lang$html$Html_Attributes$class('form-control'),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$placeholder('Url'),
+							_0: _elm_lang$html$Html_Attributes$type_('url'),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CreateRestaurant$Url),
+								_0: _elm_lang$html$Html_Attributes$placeholder('Url'),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$value(model.url),
-									_1: {ctor: '[]'}
+									_0: _elm_lang$html$Html_Events$onInput(_user$project$Components_CreateRestaurant$Url),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$html$Html_Attributes$value(model.url),
+										_1: {ctor: '[]'}
+									}
 								}
 							}
 						}
@@ -10735,7 +10733,11 @@ var _user$project$App$init = function (flags) {
 				_1: {
 					ctor: '::',
 					_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$RestaurantListMsg, _user$project$Components_RestaurantList$fetchRestaurants),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _user$project$Components_Ports$ready('ready'),
+						_1: {ctor: '[]'}
+					}
 				}
 			})
 	};
@@ -10808,17 +10810,54 @@ var _user$project$App$view = function (model) {
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$map,
-				_user$project$App$RestaurantListMsg,
-				_user$project$Components_RestaurantList$view(model.restaurantListModel)),
-			_1: {
-				ctor: '::',
-				_0: A2(
-					_elm_lang$html$Html$map,
-					_user$project$App$CreateRestaurantMsg,
-					_user$project$Components_CreateRestaurant$view(model.createRestaurantModel)),
-				_1: {ctor: '[]'}
-			}
+				_elm_lang$html$Html$div,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$class('restaurants-panel'),
+					_1: {ctor: '[]'}
+				},
+				{
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$class('restaurant-master'),
+							_1: {ctor: '[]'}
+						},
+						{
+							ctor: '::',
+							_0: A2(
+								_elm_lang$html$Html$map,
+								_user$project$App$RestaurantListMsg,
+								_user$project$Components_RestaurantList$view(model.restaurantListModel)),
+							_1: {
+								ctor: '::',
+								_0: A2(
+									_elm_lang$html$Html$map,
+									_user$project$App$CreateRestaurantMsg,
+									_user$project$Components_CreateRestaurant$view(model.createRestaurantModel)),
+								_1: {ctor: '[]'}
+							}
+						}),
+					_1: {
+						ctor: '::',
+						_0: A2(
+							_elm_lang$html$Html$div,
+							{
+								ctor: '::',
+								_0: _elm_lang$html$Html_Attributes$id('map'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$html$Html_Attributes$class('restaurant-map'),
+									_1: {ctor: '[]'}
+								}
+							},
+							{ctor: '[]'}),
+						_1: {ctor: '[]'}
+					}
+				}),
+			_1: {ctor: '[]'}
 		});
 };
 var _user$project$App$main = _elm_lang$html$Html$programWithFlags(

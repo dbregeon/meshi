@@ -24,18 +24,22 @@ import "phoenix_html"
 const elmDiv = document.querySelector('#elm-container');
 const socketUrl = window.socketUrl;
 const elmApp = Elm.App.embed(elmDiv,  { socketUrl });
-
-const mapDiv = document.getElementById('map');
+var mapDiv;
+var gmap;
 
 elmApp.ports.googleMap.subscribe(function(url) {
     console.log("received", url);
     let myLatlng = new google.maps.LatLng(10, 5);
     gmap.setCenter(myLatlng);
 });
-
-let myLatlng = new google.maps.LatLng(43, 4.5);
-let mapOptions = {
-  zoom: 6,
-  center: myLatlng
-};
-const gmap = new google.maps.Map(mapDiv, mapOptions);
+elmApp.ports.ready.subscribe(function(value) {
+  if (value === "ready") {
+    let myLatlng = new google.maps.LatLng(43, 4.5);
+    let mapOptions = {
+      zoom: 6,
+      center: myLatlng
+    };
+    mapDiv = document.getElementById('map');
+    gmap = new google.maps.Map(mapDiv, mapOptions);
+  }
+});
