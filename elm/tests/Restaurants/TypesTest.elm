@@ -11,7 +11,7 @@ import Restaurants.Types as Types
 suite : Test
 suite =
     describe "In the Types module"
-        [ describe "Types.decodeRestaurantData" -- Nest as many descriptions as you like.
+        [ describe "Types.decodeRestaurantData"
             [ test "enables to decode a correct input" <|
                 \_ ->
                     let

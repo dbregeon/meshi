@@ -13,7 +13,7 @@ import Restaurants.View as View
 suite : Test
 suite =
     describe "In the View module"
-        [ describe "View.renderRestaurant" -- Nest as many descriptions as you like.
+        [ describe "View.renderRestaurant"
             [ test "shows the name of the restaurant" <|
                 \_ ->
                     let
@@ -29,7 +29,7 @@ suite =
                          |> Query.find [ tag "strong"]
                          |> Query.has [ text "Test Name" ]
               ]
-          , describe "View.renderRestaurantList" -- Nest as many descriptions as you like.
+          , describe "View.renderRestaurantList"
               [ test "shows a restaurant-list list" <|
                 \_ ->
                     let
