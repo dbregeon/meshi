@@ -10438,73 +10438,61 @@ var _user$project$Restaurants_View$renderCreateRestaurantForm = function (model)
 };
 var _user$project$Restaurants_View$renderRestaurant = function (restaurant) {
 	return A2(
-		_elm_lang$html$Html$li,
+		_elm_lang$html$Html$span,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Events$onClick(
-				_user$project$Restaurants_Types$UpdateMap(restaurant)),
+			_0: _elm_lang$html$Html_Attributes$class('restaurant'),
 			_1: {ctor: '[]'}
 		},
 		{
 			ctor: '::',
 			_0: A2(
-				_elm_lang$html$Html$span,
+				_elm_lang$html$Html$a,
 				{
 					ctor: '::',
-					_0: _elm_lang$html$Html_Attributes$class('restaurant'),
+					_0: _elm_lang$html$Html_Attributes$href(restaurant.url),
 					_1: {ctor: '[]'}
 				},
 				{
 					ctor: '::',
 					_0: A2(
-						_elm_lang$html$Html$a,
+						_elm_lang$html$Html$strong,
+						{ctor: '[]'},
 						{
 							ctor: '::',
-							_0: _elm_lang$html$Html_Attributes$href(restaurant.url),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$strong,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(restaurant.name),
-									_1: {ctor: '[]'}
-								}),
+							_0: _elm_lang$html$Html$text(restaurant.name),
 							_1: {ctor: '[]'}
 						}),
-					_1: {
-						ctor: '::',
-						_0: A2(
-							_elm_lang$html$Html$span,
-							{ctor: '[]'},
-							{
-								ctor: '::',
-								_0: _elm_lang$html$Html$text(
-									A2(_elm_lang$core$Basics_ops['++'], ' Posted by: ', restaurant.postedBy)),
-								_1: {ctor: '[]'}
-							}),
-						_1: {
-							ctor: '::',
-							_0: A2(
-								_elm_lang$html$Html$em,
-								{ctor: '[]'},
-								{
-									ctor: '::',
-									_0: _elm_lang$html$Html$text(
-										A2(
-											_elm_lang$core$Basics_ops['++'],
-											' (posted on: ',
-											A2(_elm_lang$core$Basics_ops['++'], restaurant.postedOn, ')'))),
-									_1: {ctor: '[]'}
-								}),
-							_1: {ctor: '[]'}
-						}
-					}
+					_1: {ctor: '[]'}
 				}),
-			_1: {ctor: '[]'}
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$span,
+					{ctor: '[]'},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text(
+							A2(_elm_lang$core$Basics_ops['++'], ' Posted by: ', restaurant.postedBy)),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$em,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(
+								A2(
+									_elm_lang$core$Basics_ops['++'],
+									' (posted on: ',
+									A2(_elm_lang$core$Basics_ops['++'], restaurant.postedOn, ')'))),
+							_1: {ctor: '[]'}
+						}),
+					_1: {ctor: '[]'}
+				}
+			}
 		});
 };
 var _user$project$Restaurants_View$renderRestaurantList = function (restaurants) {
@@ -10515,7 +10503,24 @@ var _user$project$Restaurants_View$renderRestaurantList = function (restaurants)
 			_0: _elm_lang$html$Html_Attributes$class('restaurant-list'),
 			_1: {ctor: '[]'}
 		},
-		A2(_elm_lang$core$List$map, _user$project$Restaurants_View$renderRestaurant, restaurants));
+		A2(
+			_elm_lang$core$List$map,
+			function (r) {
+				return A2(
+					_elm_lang$html$Html$li,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Restaurants_Types$UpdateMap(r)),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _user$project$Restaurants_View$renderRestaurant(r),
+						_1: {ctor: '[]'}
+					});
+			},
+			restaurants));
 };
 var _user$project$Restaurants_View$view = function (model) {
 	return A2(

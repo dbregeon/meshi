@@ -1,4 +1,4 @@
-module Restaurants.View exposing (view)
+module Restaurants.View exposing (..)
 
 import Html exposing (Html, span, strong, em, a, text, div, button, input, ul, li)
 import Html.Attributes exposing (class, href, id, value, placeholder, type_)
@@ -16,17 +16,17 @@ view model =
 
 renderRestaurant : Types.Restaurant -> Html Types.Msg
 renderRestaurant restaurant =
-  li [ onClick (Types.UpdateMap restaurant) ]
-   [ span [ class "restaurant" ]
-      [a [ href restaurant.url ] [ strong [ ] [ text restaurant.name ] ]
-      , span [ ] [ text (" Posted by: " ++ restaurant.postedBy) ]
-      , em [ ] [ text (" (posted on: " ++ restaurant.postedOn ++ ")") ]
-      ]
-   ]
+ span [ class "restaurant" ]
+  [a [ href restaurant.url ]
+    [ strong [ ] [ text restaurant.name ] ]
+    , span [ ] [ text (" Posted by: " ++ restaurant.postedBy) ]
+    , em [ ] [ text (" (posted on: " ++ restaurant.postedOn ++ ")") ] ]
 
 renderRestaurantList : Types.Restaurants -> Html Types.Msg
 renderRestaurantList restaurants =
- ul [ class "restaurant-list" ] (List.map renderRestaurant restaurants)
+ ul [ class "restaurant-list" ] ( List.map
+   (\r -> li [ onClick (Types.UpdateMap r) ] [ renderRestaurant r ])
+   restaurants )
 
 renderCreateRestaurantForm : Types.Restaurant -> Html Types.Msg
 renderCreateRestaurantForm model =
