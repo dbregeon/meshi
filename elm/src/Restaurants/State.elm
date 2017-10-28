@@ -15,20 +15,24 @@ update msg model =
       Err error ->
         Debug.log (toString error)
         (model, Cmd.none)
-    Types.AddRestaurant restaurant ->
+    Types.ShowRestaurant restaurant ->
       ( { model | restaurantList = restaurant :: model.restaurantList }, Cmd.none )
-    Types.UpdateMap restaurant ->
-      ( model , Ports.googleMap restaurant.url )
+    Types.EditRestaurant restaurant ->
+      ( model, Cmd.none )
+    Types.AddRestaurant restaurant ->
+      ( { model | newRestaurant = (Just Types.emptyRestaurant) }, Cmd.none )
+    Types.RemoveRestaurant restaurant ->
+      ( { model | restaurantList = (List.filter (\r -> restaurant /= r) model.restaurantList), selectedRestaurant = Types.emptyRestaurant }, Cmd.none )
+    Types.SelectRestaurant restaurant ->
+      ( { model | selectedRestaurant = restaurant }, Cmd.none )
     Types.Name name ->
       let
-        current = model.newRestaurant
-        updatedCreateRestaurant = { current | name = name }
+        updatedCreateRestaurant = Maybe.map (\r -> { r | name = name }) model.newRestaurant
       in
         ({ model | newRestaurant = updatedCreateRestaurant }, Cmd.none)
     Types.Url url ->
       let
-        current = model.newRestaurant
-        updatedCreateRestaurant = {current | url = url }
+        updatedCreateRestaurant = Maybe.map (\r -> { r | url = url }) model.newRestaurant
       in
         ({ model | newRestaurant = updatedCreateRestaurant }, Cmd.none)
     Types.Create restaurant ->
@@ -36,7 +40,8 @@ update msg model =
     Types.CreateResult result ->
       case result of
         Ok restaurant ->
-          ({ model | newRestaurant = Types.emptyRestaurant }, Cmd.none)
+          Debug.log("Created !")
+          ({ model | newRestaurant = Nothing }, Cmd.none)
         Err error ->
           Debug.log (toString error)
           (model, Cmd.none)
@@ -50,7 +55,7 @@ createRestaurant restaurant =
       |> Types.encodeRestaurant
       |> Http.jsonBody
   in
-    Http.send Types.CreateResult (Http.post url body Types.decodeRestaurantData)
+    Http.send Types.CreateResult (Http.post url body Types.decodeRestaurantResponse)
 
 fetchRestaurants : Cmd Types.Msg
 fetchRestaurants =

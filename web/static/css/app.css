@@ -24,3 +24,16 @@
   height: 100%;
   width: 70%;
 }
+
+.restaurant-selected {
+  background-color: grey;
+}
+
+.restaurant-edit-btn {
+  float:right;
+  padding:unset;
+}
+
+.restaurant-remove-btn {
+  float:right;
+}

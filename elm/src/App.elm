@@ -68,7 +68,7 @@ update msg model =
     NewMessage raw ->
       case Decode.decodeValue Types.decodeRestaurantData raw of
         Ok restaurant ->
-          update ( RestaurantsMsg ( Types.AddRestaurant restaurant ) ) model
+          update ( RestaurantsMsg ( Types.ShowRestaurant restaurant ) ) model
         Err error ->
           model ! []
     PhoenixMsg msg ->

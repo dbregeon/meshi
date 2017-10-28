@@ -24,22 +24,39 @@ import "phoenix_html"
 const elmDiv = document.querySelector('#elm-container');
 const socketUrl = window.socketUrl;
 const elmApp = Elm.App.embed(elmDiv,  { socketUrl });
-var mapDiv;
-var gmap;
 
-elmApp.ports.googleMap.subscribe(function(url) {
-    console.log("received", url);
-    let myLatlng = new google.maps.LatLng(10, 5);
-    gmap.setCenter(myLatlng);
-});
-elmApp.ports.ready.subscribe(function(value) {
-  if (value === "ready") {
-    let myLatlng = new google.maps.LatLng(43, 4.5);
-    let mapOptions = {
-      zoom: 6,
-      center: myLatlng
-    };
-    mapDiv = document.getElementById('map');
-    gmap = new google.maps.Map(mapDiv, mapOptions);
-  }
-});
+// var service;
+// var mapDiv;
+// var gmap;
+//
+// elmApp.ports.googleMap.subscribe(function(url) {
+//     console.log("received", url);
+//     updateMap(url);
+// });
+// elmApp.ports.ready.subscribe(function(value) {
+//   if (value === "ready") {
+//     let myLatlng = new google.maps.LatLng(43, 4.5);
+//     let mapOptions = {
+//       zoom: 6,
+//       center: myLatlng
+//     };
+//     mapDiv = document.getElementById('map');
+//     gmap = new google.maps.Map(mapDiv, mapOptions);
+//     service = new google.maps.places.PlacesService(gmap);
+//     updateMap("https://www.google.co.jp/maps/place/Authentic/@35.669322,139.7365143,17z/data=!3m1!4b1!4m5!3m4!1s0x60188b84388f5135:0xaa9230919f8256a!8m2!3d35.669322!4d139.738703?hl=en");
+//   }
+// });
+//
+// function updateMap(url) {
+//   service.getDetails({
+//           placeId: 'TradingScreen+Japan+K.K.'
+//   }, function(place, status) {
+//     if (status === google.maps.places.PlacesServiceStatus.OK) {
+//         var marker = new google.maps.Marker({
+//           map: gmap,
+//           position: place.geometry.location
+//         });
+//         gmap.setCenter(place.geometry.location);
+//     }
+//   });
+// }

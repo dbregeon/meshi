@@ -11,21 +11,26 @@ type alias Restaurants = List Restaurant
 
 type alias Model =
   { restaurantList : Restaurants
-  , newRestaurant : Restaurant }
+  , newRestaurant : Maybe Restaurant
+  , selectedRestaurant : Restaurant }
 
 type Msg
   = UpdateRestaurants (Result Http.Error Restaurants)
+  | ShowRestaurant Restaurant
   | AddRestaurant Restaurant
-  | UpdateMap Restaurant
+  | RemoveRestaurant Restaurant
+  | EditRestaurant Restaurant
+  | SelectRestaurant Restaurant
+  | Create Restaurant
   | Name String
   | Url String
-  | Create Restaurant
   | CreateResult (Result Http.Error Restaurant)
 
 initialModel : Model
 initialModel =
   { restaurantList = []
-  , newRestaurant = emptyRestaurant
+  , newRestaurant = Nothing
+  , selectedRestaurant = emptyRestaurant
   }
 
 emptyRestaurant: Restaurant
@@ -35,6 +40,10 @@ emptyRestaurant =
 decodeRestaurantFetch : Decode.Decoder (List Restaurant)
 decodeRestaurantFetch =
   Decode.at ["restaurants"] (Decode.list decodeRestaurantData)
+
+decodeRestaurantResponse : Decode.Decoder Restaurant
+decodeRestaurantResponse =
+  Decode.at ["restaurant"] decodeRestaurantData
 
 decodeRestaurantData : Decode.Decoder Restaurant
 decodeRestaurantData =
