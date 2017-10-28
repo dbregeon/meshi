@@ -7,7 +7,7 @@ defmodule Meshi.Restaurant do
     field :name, :string
     field :posted_by, :string
     field :posted_on, :utc_datetime
-    field :url, :string
+    field :url, :binary
 
     timestamps()
   end
