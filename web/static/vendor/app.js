@@ -11380,7 +11380,7 @@ var _user$project$Restaurants_View$renderRestaurantMaster = function (model) {
 		_elm_lang$html$Html$div,
 		{
 			ctor: '::',
-			_0: _elm_lang$html$Html_Attributes$class('restaurant-master'),
+			_0: _elm_lang$html$Html_Attributes$class('restaurant-master col-md-4'),
 			_1: {ctor: '[]'}
 		},
 		{
@@ -11465,7 +11465,7 @@ var _user$project$Restaurants_View$view = function (model) {
 					_elm_lang$html$Html$div,
 					{
 						ctor: '::',
-						_0: _elm_lang$html$Html_Attributes$class('restaurant-detail'),
+						_0: _elm_lang$html$Html_Attributes$class('restaurant-detail col-md-8'),
 						_1: {ctor: '[]'}
 					},
 					{
@@ -11477,7 +11477,7 @@ var _user$project$Restaurants_View$view = function (model) {
 								_0: _elm_lang$html$Html_Attributes$src(model.selectedRestaurant.url),
 								_1: {
 									ctor: '::',
-									_0: _elm_lang$html$Html_Attributes$width(600),
+									_0: _elm_lang$html$Html_Attributes$width(730),
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Attributes$height(400),

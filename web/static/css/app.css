@@ -1,11 +1,20 @@
 /* This file is for your main application css. */
+.logo {
+  width: 40px;
+  height: 40px;
+  background-size: 100%;
+  display: inline-block;
+  margin-top: 0.5em;
+  margin-bottom: 1em;
+  background-image: url("/images/bowl-of-white-rice.png");
+}
+
 .restaurants-panel {
   height:400px;
 }
 
 .restaurant-master {
   height: 100%;
-  width: 30%;
   float:left;
 }
 
@@ -19,10 +28,9 @@
   height: 25%;
 }
 
-.restaurant-map {
+.restaurant-detail {
   float:right;
   height: 100%;
-  width: 70%;
 }
 
 .restaurant-selected {
