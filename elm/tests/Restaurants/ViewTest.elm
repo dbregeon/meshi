@@ -18,6 +18,7 @@ suite =
                 \_ ->
                     let
                         restaurant = {
+                              id = 0,
                               name = "Test Name",
                               url = "Test Url",
                               postedBy = "Test Posted By",
@@ -35,12 +36,13 @@ suite =
                     let
                       restaurantList = [
                             {
+                              id = 0,
                               name = "Test Name",
                               url = "Test Url",
                               postedBy = "Test Posted By",
                               postedOn = "Test Posted On"
                             } ]
-                      view = View.renderRestaurantList restaurantList
+                      view = View.renderRestaurantList restaurantList Types.emptyRestaurant
                     in
                         view
                          |> Query.fromHtml
@@ -49,15 +51,17 @@ suite =
                   \_ ->
                       let
                         restaurantList =
-                           [ { name = "Test Name"
+                           [ { id = 1
+                             , name = "Test Name"
                              , url = "Test Url"
                              , postedBy = "Test Posted By"
                              , postedOn = "Test Posted On" }
-                           , { name = "Other Name"
+                           , { id = 0
+                             , name = "Other Name"
                              , url = "Other Url"
                              , postedBy = "Other Posted By"
                              , postedOn = "Other Posted On" } ]
-                        view = View.renderRestaurantList restaurantList
+                        view = View.renderRestaurantList restaurantList Types.emptyRestaurant
                       in
                           view
                            |> Query.fromHtml
@@ -67,15 +71,17 @@ suite =
                   \_ ->
                       let
                         restaurantList =
-                           [ { name = "Test Name"
+                           [ { id = 1
+                             , name = "Test Name"
                              , url = "Test Url"
                              , postedBy = "Test Posted By"
                              , postedOn = "Test Posted On" }
-                           , { name = "Other Name"
+                           , { id = 0
+                             , name = "Other Name"
                              , url = "Other Url"
                              , postedBy = "Other Posted By"
                              , postedOn = "Other Posted On" } ]
-                        view = View.renderRestaurantList restaurantList
+                        view = View.renderRestaurantList restaurantList Types.emptyRestaurant
                       in
                           view
                            |> Query.fromHtml

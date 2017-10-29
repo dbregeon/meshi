@@ -18,6 +18,7 @@ suite =
                         jsonString =
                             """
                             {
+                              "id": 0,
                               "name": "Test Name",
                               "url": "Test Url",
                               "posted_by": "Test Posted By",
@@ -27,28 +28,28 @@ suite =
                         decodedOutput = ( Decode.decodeString Types.decodeRestaurantData jsonString )
                     in
                       Expect.equal decodedOutput (Ok
-                        { name = "Test Name"
+                        { id = 0
+                        , name = "Test Name"
                         , url = "Test Url"
                         , postedBy = "Test Posted By"
                         , postedOn = "Test Posted On"
                         }
                     )
 
-            -- Expect.equal is designed to be used in pipeline style, like this.
-            , test "fails to decode when posted_on is a number" <|
+            , test "fails to decode when id is not a number" <|
                 \_ ->
                     let
                         jsonString =
                             """
-                            {
+                            { "id": "Test"
                               "name": "Test Name",
                               "url": "Test Url",
                               "posted_by": "Test Posted By",
-                              "posted_on": 1234
+                              "posted_on": "Test Posted On"
                             }
                             """
                         decodedOutput = ( Decode.decodeString Types.decodeRestaurantData jsonString )
                     in
-                      Expect.equal decodedOutput (Err "Expecting a String at _.posted_on but instead got: 1234")
+                      Expect.equal decodedOutput (Err "Given an invalid JSON: Unexpected string in JSON at position 74")
               ]
         ]
