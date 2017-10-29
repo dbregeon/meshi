@@ -26,6 +26,8 @@ type alias Model =
 type Msg
   = RestaurantsMsg Types.Msg
     | NewMessage Encode.Value
+    | UpdateMessage Encode.Value
+    | RemoveMessage Encode.Value
     | PhoenixMsg (Phoenix.Socket.Msg Msg)
 
 
@@ -45,7 +47,9 @@ initPhxSocket : Flags -> Phoenix.Socket.Socket Msg
 initPhxSocket flags =
     Phoenix.Socket.init flags.socketUrl
         |> Phoenix.Socket.withDebug
-        |> Phoenix.Socket.on "change" "restaurants" NewMessage
+        |> Phoenix.Socket.on "new" "restaurants" NewMessage
+        |> Phoenix.Socket.on "update" "restaurants" UpdateMessage
+        |> Phoenix.Socket.on "remove" "restaurants" RemoveMessage
 
 init : Flags -> (Model, Cmd Msg)
 init flags =
@@ -69,6 +73,14 @@ update msg model =
       case Decode.decodeValue Types.decodeRestaurantData raw of
         Ok restaurant ->
           update ( RestaurantsMsg ( Types.ShowRestaurant restaurant ) ) model
+        Err error ->
+          model ! []
+    UpdateMessage raw ->
+          model ! []
+    RemoveMessage raw ->
+      case Decode.decodeValue Types.decodeRestaurantData raw of
+        Ok restaurant ->
+          update ( RestaurantsMsg ( Types.HideRestaurant restaurant ) ) model
         Err error ->
           model ! []
     PhoenixMsg msg ->

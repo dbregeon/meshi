@@ -11135,19 +11135,20 @@ var _user$project$Restaurants_Types$encodeRestaurant = function (model) {
 			}
 		});
 };
-var _user$project$Restaurants_Types$emptyRestaurant = {name: '', url: '', postedBy: '', postedOn: ''};
+var _user$project$Restaurants_Types$emptyRestaurant = {id: -1, name: '', url: '', postedBy: '', postedOn: ''};
 var _user$project$Restaurants_Types$initialModel = {
 	restaurantList: {ctor: '[]'},
 	newRestaurant: _elm_lang$core$Maybe$Nothing,
 	selectedRestaurant: _user$project$Restaurants_Types$emptyRestaurant
 };
-var _user$project$Restaurants_Types$Restaurant = F4(
-	function (a, b, c, d) {
-		return {name: a, url: b, postedBy: c, postedOn: d};
+var _user$project$Restaurants_Types$Restaurant = F5(
+	function (a, b, c, d, e) {
+		return {id: a, name: b, url: c, postedBy: d, postedOn: e};
 	});
-var _user$project$Restaurants_Types$decodeRestaurantData = A5(
-	_elm_lang$core$Json_Decode$map4,
+var _user$project$Restaurants_Types$decodeRestaurantData = A6(
+	_elm_lang$core$Json_Decode$map5,
 	_user$project$Restaurants_Types$Restaurant,
+	A2(_elm_lang$core$Json_Decode$field, 'id', _elm_lang$core$Json_Decode$int),
 	A2(_elm_lang$core$Json_Decode$field, 'name', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'url', _elm_lang$core$Json_Decode$string),
 	A2(_elm_lang$core$Json_Decode$field, 'posted_by', _elm_lang$core$Json_Decode$string),
@@ -11172,6 +11173,9 @@ var _user$project$Restaurants_Types$Model = F3(
 	function (a, b, c) {
 		return {restaurantList: a, newRestaurant: b, selectedRestaurant: c};
 	});
+var _user$project$Restaurants_Types$DeleteResult = function (a) {
+	return {ctor: 'DeleteResult', _0: a};
+};
 var _user$project$Restaurants_Types$CreateResult = function (a) {
 	return {ctor: 'CreateResult', _0: a};
 };
@@ -11195,6 +11199,9 @@ var _user$project$Restaurants_Types$RemoveRestaurant = function (a) {
 };
 var _user$project$Restaurants_Types$AddRestaurant = function (a) {
 	return {ctor: 'AddRestaurant', _0: a};
+};
+var _user$project$Restaurants_Types$HideRestaurant = function (a) {
+	return {ctor: 'HideRestaurant', _0: a};
 };
 var _user$project$Restaurants_Types$ShowRestaurant = function (a) {
 	return {ctor: 'ShowRestaurant', _0: a};
@@ -11515,6 +11522,29 @@ var _user$project$Restaurants_State$fetchRestaurants = function () {
 		_user$project$Restaurants_Types$UpdateRestaurants,
 		A2(_elm_lang$http$Http$get, url, _user$project$Restaurants_Types$decodeRestaurantFetch));
 }();
+var _user$project$Restaurants_State$deleteRestaurant = function (restaurant) {
+	var url = _elm_lang$core$String$concat(
+		{
+			ctor: '::',
+			_0: '/api/restaurants/',
+			_1: {
+				ctor: '::',
+				_0: _elm_lang$core$Basics$toString(restaurant.id),
+				_1: {ctor: '[]'}
+			}
+		});
+	var request = _elm_lang$http$Http$request(
+		{
+			method: 'DELETE',
+			headers: {ctor: '[]'},
+			url: url,
+			body: _elm_lang$http$Http$emptyBody,
+			expect: _elm_lang$http$Http$expectJson(_user$project$Restaurants_Types$decodeRestaurantResponse),
+			timeout: _elm_lang$core$Maybe$Nothing,
+			withCredentials: false
+		});
+	return A2(_elm_lang$http$Http$send, _user$project$Restaurants_Types$DeleteResult, request);
+};
 var _user$project$Restaurants_State$createRestaurant = function (restaurant) {
 	var body = _elm_lang$http$Http$jsonBody(
 		_user$project$Restaurants_Types$encodeRestaurant(restaurant));
@@ -11554,6 +11584,22 @@ var _user$project$Restaurants_State$update = F2(
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
+			case 'HideRestaurant':
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							restaurantList: A2(
+								_elm_lang$core$List$filter,
+								function (r) {
+									return !_elm_lang$core$Native_Utils.eq(_p0._0, r);
+								},
+								model.restaurantList),
+							selectedRestaurant: _user$project$Restaurants_Types$emptyRestaurant
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 			case 'EditRestaurant':
 				return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'AddRestaurant':
@@ -11569,18 +11615,8 @@ var _user$project$Restaurants_State$update = F2(
 			case 'RemoveRestaurant':
 				return {
 					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{
-							restaurantList: A2(
-								_elm_lang$core$List$filter,
-								function (r) {
-									return !_elm_lang$core$Native_Utils.eq(_p0._0, r);
-								},
-								model.restaurantList),
-							selectedRestaurant: _user$project$Restaurants_Types$emptyRestaurant
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
+					_0: model,
+					_1: _user$project$Restaurants_State$deleteRestaurant(_p0._0)
 				};
 			case 'SelectRestaurant':
 				return {
@@ -11628,23 +11664,30 @@ var _user$project$Restaurants_State$update = F2(
 					_0: model,
 					_1: _user$project$Restaurants_State$createRestaurant(_p0._0)
 				};
-			default:
+			case 'CreateResult':
 				var _p2 = _p0._0;
 				if (_p2.ctor === 'Ok') {
-					return A2(
-						_elm_lang$core$Debug$log,
-						'Created !',
-						{
-							ctor: '_Tuple2',
-							_0: _elm_lang$core$Native_Utils.update(
-								model,
-								{newRestaurant: _elm_lang$core$Maybe$Nothing}),
-							_1: _elm_lang$core$Platform_Cmd$none
-						});
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{newRestaurant: _elm_lang$core$Maybe$Nothing}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
 				} else {
 					return A2(
 						_elm_lang$core$Debug$log,
 						_elm_lang$core$Basics$toString(_p2._0),
+						{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none});
+				}
+			default:
+				var _p3 = _p0._0;
+				if (_p3.ctor === 'Ok') {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				} else {
+					return A2(
+						_elm_lang$core$Debug$log,
+						_elm_lang$core$Basics$toString(_p3._0),
 						{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none});
 				}
 		}
@@ -11706,17 +11749,33 @@ var _user$project$App$PhoenixMsg = function (a) {
 var _user$project$App$subscriptions = function (model) {
 	return A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$listen, model.phxSocket, _user$project$App$PhoenixMsg);
 };
+var _user$project$App$RemoveMessage = function (a) {
+	return {ctor: 'RemoveMessage', _0: a};
+};
+var _user$project$App$UpdateMessage = function (a) {
+	return {ctor: 'UpdateMessage', _0: a};
+};
 var _user$project$App$NewMessage = function (a) {
 	return {ctor: 'NewMessage', _0: a};
 };
 var _user$project$App$initPhxSocket = function (flags) {
 	return A4(
 		_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
-		'change',
+		'remove',
 		'restaurants',
-		_user$project$App$NewMessage,
-		_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
-			_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socketUrl)));
+		_user$project$App$RemoveMessage,
+		A4(
+			_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
+			'update',
+			'restaurants',
+			_user$project$App$UpdateMessage,
+			A4(
+				_fbonetti$elm_phoenix_socket$Phoenix_Socket$on,
+				'new',
+				'restaurants',
+				_user$project$App$NewMessage,
+				_fbonetti$elm_phoenix_socket$Phoenix_Socket$withDebug(
+					_fbonetti$elm_phoenix_socket$Phoenix_Socket$init(flags.socketUrl)))));
 };
 var _user$project$App$initialModel = function (flags) {
 	return {
@@ -11786,10 +11845,30 @@ var _user$project$App$update = F2(
 							model,
 							{ctor: '[]'});
 					}
+				case 'UpdateMessage':
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						model,
+						{ctor: '[]'});
+				case 'RemoveMessage':
+					var _p4 = A2(_elm_lang$core$Json_Decode$decodeValue, _user$project$Restaurants_Types$decodeRestaurantData, _p1._0);
+					if (_p4.ctor === 'Ok') {
+						var _v5 = _user$project$App$RestaurantsMsg(
+							_user$project$Restaurants_Types$HideRestaurant(_p4._0)),
+							_v6 = model;
+						msg = _v5;
+						model = _v6;
+						continue update;
+					} else {
+						return A2(
+							_elm_lang$core$Platform_Cmd_ops['!'],
+							model,
+							{ctor: '[]'});
+					}
 				default:
-					var _p4 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p1._0, model.phxSocket);
-					var phxSocket = _p4._0;
-					var phxCmd = _p4._1;
+					var _p5 = A2(_fbonetti$elm_phoenix_socket$Phoenix_Socket$update, _p1._0, model.phxSocket);
+					var phxSocket = _p5._0;
+					var phxCmd = _p5._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(

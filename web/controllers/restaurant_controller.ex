@@ -22,7 +22,7 @@ defmodule Meshi.RestaurantController do
       {:ok, restaurant} ->
        Meshi.Endpoint.broadcast(
         "restaurants",
-        "change",
+        "new",
         restaurant
        )
        conn
@@ -40,7 +40,35 @@ defmodule Meshi.RestaurantController do
       changeset = Restaurant.changeset(restaurant, params)
       case Repo.update(changeset) do
         {:ok, restaurant} ->
+          Meshi.Endpoint.broadcast(
+           "restaurants",
+           "update",
+           restaurant
+          )
           json conn |> put_status(:ok), restaurant
+        {:error, _changeset} ->
+          json conn |> put_status(:bad_request),
+            %{errors: ["bad update"] }
+      end
+    else
+      json conn |> put_status(:not_found),
+                   %{errors: ["invalid restaurant"] }
+    end
+  end
+
+  def delete(conn, %{"id" => id}) do
+    restaurant = Repo.get(Restaurant, id)
+    if restaurant do
+      case Repo.delete(restaurant) do
+        {:ok, restaurant} ->
+          Meshi.Endpoint.broadcast(
+           "restaurants",
+           "remove",
+           restaurant
+          )
+          conn
+           |> put_status(:ok)
+           |> render("show.json", restaurant: restaurant)
         {:error, _changeset} ->
           json conn |> put_status(:bad_request),
             %{errors: ["bad update"] }

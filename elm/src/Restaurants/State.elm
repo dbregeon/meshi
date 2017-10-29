@@ -17,12 +17,14 @@ update msg model =
         (model, Cmd.none)
     Types.ShowRestaurant restaurant ->
       ( { model | restaurantList = restaurant :: model.restaurantList }, Cmd.none )
+    Types.HideRestaurant restaurant ->
+      ( { model | restaurantList = (List.filter (\r -> restaurant /= r) model.restaurantList), selectedRestaurant = Types.emptyRestaurant }, Cmd.none )
     Types.EditRestaurant restaurant ->
       ( model, Cmd.none )
     Types.AddRestaurant restaurant ->
       ( { model | newRestaurant = (Just Types.emptyRestaurant) }, Cmd.none )
     Types.RemoveRestaurant restaurant ->
-      ( { model | restaurantList = (List.filter (\r -> restaurant /= r) model.restaurantList), selectedRestaurant = Types.emptyRestaurant }, Cmd.none )
+      (model, deleteRestaurant (restaurant))
     Types.SelectRestaurant restaurant ->
       ( { model | selectedRestaurant = restaurant }, Cmd.none )
     Types.Name name ->
@@ -40,8 +42,14 @@ update msg model =
     Types.CreateResult result ->
       case result of
         Ok restaurant ->
-          Debug.log("Created !")
           ({ model | newRestaurant = Nothing }, Cmd.none)
+        Err error ->
+          Debug.log (toString error)
+          (model, Cmd.none)
+    Types.DeleteResult result ->
+      case result of
+        Ok restaurant ->
+          (model, Cmd.none)
         Err error ->
           Debug.log (toString error)
           (model, Cmd.none)
@@ -56,6 +64,21 @@ createRestaurant restaurant =
       |> Http.jsonBody
   in
     Http.send Types.CreateResult (Http.post url body Types.decodeRestaurantResponse)
+
+deleteRestaurant : Types.Restaurant -> Cmd Types.Msg
+deleteRestaurant restaurant =
+  let
+    url = String.concat ["/api/restaurants/", toString restaurant.id]
+    request = Http.request { method = "DELETE"
+    , headers = []
+    , url = url
+    , body = Http.emptyBody
+    , expect = Http.expectJson Types.decodeRestaurantResponse
+    , timeout = Nothing
+    , withCredentials = False
+    }
+  in
+    Http.send Types.DeleteResult request
 
 fetchRestaurants : Cmd Types.Msg
 fetchRestaurants =

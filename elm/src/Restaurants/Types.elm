@@ -5,7 +5,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 
 type alias Restaurant =
-  { name : String, url : String, postedBy : String, postedOn: String }
+  { id: Int, name : String, url : String, postedBy : String, postedOn: String }
 
 type alias Restaurants = List Restaurant
 
@@ -17,6 +17,7 @@ type alias Model =
 type Msg
   = UpdateRestaurants (Result Http.Error Restaurants)
   | ShowRestaurant Restaurant
+  | HideRestaurant Restaurant
   | AddRestaurant Restaurant
   | RemoveRestaurant Restaurant
   | EditRestaurant Restaurant
@@ -25,6 +26,7 @@ type Msg
   | Name String
   | Url String
   | CreateResult (Result Http.Error Restaurant)
+  | DeleteResult (Result Http.Error Restaurant)
 
 initialModel : Model
 initialModel =
@@ -35,7 +37,7 @@ initialModel =
 
 emptyRestaurant: Restaurant
 emptyRestaurant =
-  {name = "", url = "", postedBy = "", postedOn = ""}
+  {id=-1, name = "", url = "", postedBy = "", postedOn = ""}
 
 decodeRestaurantFetch : Decode.Decoder (List Restaurant)
 decodeRestaurantFetch =
@@ -47,7 +49,8 @@ decodeRestaurantResponse =
 
 decodeRestaurantData : Decode.Decoder Restaurant
 decodeRestaurantData =
-  Decode.map4 Restaurant
+  Decode.map5 Restaurant
+    (Decode.field "id" Decode.int)
     (Decode.field "name" Decode.string)
     (Decode.field "url" Decode.string)
     (Decode.field "posted_by" Decode.string)

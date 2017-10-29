@@ -18,6 +18,7 @@ defmodule Meshi.RestaurantView do
 
   def restaurant_json(restaurant) do
     %{
+      id: restaurant.id,
       name: restaurant.name,
       url: restaurant.url,
       posted_by: restaurant.posted_by,

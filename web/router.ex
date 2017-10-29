@@ -16,7 +16,7 @@ defmodule Meshi.Router do
   scope "/api", Meshi do
     pipe_through :api # Use the default api stack
 
-    resources "/restaurants", RestaurantController, only: [:index, :show, :create, :update]
+    resources "/restaurants", RestaurantController, only: [:index, :show, :create, :update, :delete]
   end
 
   scope "/", Meshi do
