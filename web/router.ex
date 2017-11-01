@@ -21,7 +21,7 @@ defmodule Meshi.Slack.Router do
 
   post "/" do
     Meshi.SlackSender.sendmsg "Yeah!"
-    send_resp(conn, 200, ~s({"text":"ok"}))
+    send_resp(conn, 200, "")
   end
   match _, do: send_resp(conn, 404, "Not found")
 end
@@ -34,7 +34,7 @@ defmodule Meshi.Router do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_flash
-    #plug :protect_from_forgery
+    plug :protect_from_forgery
     plug :put_secure_browser_headers
   end
 
@@ -52,8 +52,12 @@ defmodule Meshi.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+  end
 
-    forward "/slack/webhook", Slack.Plug, name: "Hello Slack"
+  scope "/slack/webhook", Meshi do
+    pipe_through :api # Use the default api stack
+
+    forward "/", Slack.Plug, name: "Hello Slack"
   end
 
   scope "/auth", Meshi do
