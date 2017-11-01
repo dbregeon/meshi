@@ -35,6 +35,8 @@ defmodule Meshi.Web do
       import Ecto
       import Ecto.Query
 
+      import Plug.Conn
+
       import Meshi.Router.Helpers
       import Meshi.Gettext
     end

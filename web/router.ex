@@ -1,5 +1,28 @@
+defmodule Meshi.Slack.Plug do
+  def init(opts), do: opts
+  def call(conn, opts) do
+    conn
+    |> Plug.Conn.assign(:name, Keyword.get(opts, :name, "Slack Plug"))
+    |> Meshi.Slack.Router.call(opts)
+  end
+end
+
+defmodule DeskWeb.Slack.Router do
+  use Plug.Router
+
+  plug :match
+  plug :dispatch
+
+  get "/" do
+    Desk.SlackSender.sendmsg "Yeah!"
+    send_resp(conn, 200, ~s({"text":"ok"}))
+  end
+  match _, do: send_resp(conn, 404, "Not found")
+end
+
 defmodule Meshi.Router do
   use Meshi.Web, :router
+  require Ueberauth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -23,6 +46,19 @@ defmodule Meshi.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
+  end
+
+  scope "/slack", Meshi do
+    forward "/webhook", Slack.Plug, name: "Hello Slack"
+  end
+
+  scope "/auth", Meshi do
+    pipe_through :browser
+
+    get "/:provider", AuthController, :request
+    get "/:provider/callback", AuthController, :callback
+    post "/:provider/callback", AuthController, :callback
+    delete "/logout", AuthController, :delete
   end
 
   # Other scopes may use custom stacks.

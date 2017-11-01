@@ -20,7 +20,7 @@ defmodule Meshi.Mixfile do
   def application do
     [
       mod: {Meshi, []},
-      extra_applications: [:logger]
+      extra_applications: [:logger, :ueberauth, :ueberauth_google]
     ]
   end
 
@@ -40,7 +40,8 @@ defmodule Meshi.Mixfile do
       {:phoenix_html, "~> 2.10"},
       {:phoenix_live_reload, "~> 1.0", only: :dev},
       {:gettext, "~> 0.11"},
-      {:cowboy, "~> 1.0"}
+      {:cowboy, "~> 1.0"},
+      {:ueberauth_google, "~> 0.5.0"}
     ]
   end
 
