@@ -13,7 +13,7 @@ defmodule Meshi.Slack.Router do
   plug :match
   plug :dispatch
 
-  get "/" do
+  post "/" do
     Meshi.SlackSender.sendmsg "Yeah!"
     send_resp(conn, 200, ~s({"text":"ok"}))
   end
