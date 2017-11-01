@@ -7,14 +7,14 @@ defmodule Meshi.Slack.Plug do
   end
 end
 
-defmodule DeskWeb.Slack.Router do
+defmodule Meshi.Slack.Router do
   use Plug.Router
 
   plug :match
   plug :dispatch
 
   get "/" do
-    Desk.SlackSender.sendmsg "Yeah!"
+    Meshi.SlackSender.sendmsg "Yeah!"
     send_resp(conn, 200, ~s({"text":"ok"}))
   end
   match _, do: send_resp(conn, 404, "Not found")
