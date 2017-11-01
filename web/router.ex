@@ -46,10 +46,8 @@ defmodule Meshi.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-  end
 
-  scope "/slack", Meshi do
-    forward "/webhook", Slack.Plug, name: "Hello Slack"
+    forward "/slack/webhook", Slack.Plug, name: "Hello Slack"
   end
 
   scope "/auth", Meshi do
