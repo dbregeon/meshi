@@ -13,6 +13,12 @@ defmodule Meshi.Slack.Router do
   plug :match
   plug :dispatch
 
+  # Slack will periodically send get requests
+  # to make sure the bot is still alive.
+  get "/" do
+    send_resp(conn, 200, "")
+  end
+
   post "/" do
     Meshi.SlackSender.sendmsg "Yeah!"
     send_resp(conn, 200, ~s({"text":"ok"}))
