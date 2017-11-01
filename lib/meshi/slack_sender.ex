@@ -1,6 +1,6 @@
 defmodule Meshi.SlackSender do
   def post_to_slack(encoded_msg) do
-    HTTPoison.post(Application.get_env(:slack, :incoming_slack_webhook), encoded_msg)
+    HTTPoison.post(Application.get_env(:meshi, :incoming_slack_webhook), encoded_msg)
   end
 
   def sendmsg(msg) do
