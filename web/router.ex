@@ -54,6 +54,7 @@ defmodule Meshi.Router do
 
   defp token_match(conn, _params) do
     slack_token = Application.get_env(:meshi, :slack_token)
+    Logger.info conn
     case conn.params do
       %{"token" => token} when token == slack_token ->
           conn
