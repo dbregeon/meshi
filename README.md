@@ -1,6 +1,6 @@
 # Meshi
 
-## Requirements
+## Pre-requisites
 
   * Elixir ([Installing Elixir](http://elixir-lang.github.io/install.html))
   * Erlang development tools (`erlang-dev` and `erlang-parsetools`)
