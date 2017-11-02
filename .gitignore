@@ -27,5 +27,6 @@ erl_crash.dump
 /web/elm/elm-stuff
 
 # Compiled JavaScript
-/web/static/vendor/app.js
+# Need this checked in for heroku deployments.
+# /web/static/vendor/app.js
 
