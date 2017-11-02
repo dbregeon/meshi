@@ -54,10 +54,12 @@ defmodule Meshi.Router do
 
   defp token_match(conn, _params) do
     slack_token = Application.get_env(:meshi, :slack_token)
-    Logger.info conn
     case conn.params do
       %{"token" => token} when token == slack_token ->
           conn
+      %{"token" => token} ->
+          Logger.info token
+          conn |> put_status(:bad_request) |> send_resp(404, "bad request") |> halt
       _ ->
         conn |> put_status(:bad_request) |> send_resp(404, "bad request") |> halt
     end
