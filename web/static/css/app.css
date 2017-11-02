@@ -14,14 +14,16 @@
 }
 
 .restaurant-master {
-  height: 100%;
-  float:left;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1em;
 }
 
 .restaurant-list {
-  overflow:hidden;
-  overflow-y:scroll;
-  height: 75%;
+  overflow: hidden;
+  overflow-y: auto;
+  flex: 1;
+  margin-top: 0;
 }
 
 .restaurant-create {
@@ -29,8 +31,11 @@
 }
 
 .restaurant-detail {
-  float:right;
-  height: 100%;
+}
+
+.restaurant-detail iframe {
+  width: 100%;
+  height: 400px;
 }
 
 .restaurant-selected {
