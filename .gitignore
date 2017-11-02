@@ -25,3 +25,7 @@ erl_crash.dump
 
 # Elm build artefacts
 /web/elm/elm-stuff
+
+# Compiled JavaScript
+/web/static/vendor/app.js
+
