@@ -19,8 +19,8 @@ renderRestaurantMaster: Types.Model -> Html Types.Msg
 renderRestaurantMaster model =
   div [ class "restaurant-master col-md-4 col-sm-12" ]
    ( (renderRestaurantList model.restaurantList model.selectedRestaurant)
-   :: div [] [ button [ onClick (Types.RemoveRestaurant model.selectedRestaurant), class "btn btn-danger restaurant-remove-btn", disabled (model.selectedRestaurant == Types.emptyRestaurant)] [ FA.minus ] ]
-   :: div [] [ button [ onClick (Types.AddRestaurant model.selectedRestaurant), class "btn btn-primary restaurant-add-btn"] [ FA.plus ] ]
+   :: div [] [ button [ onClick (Types.RemoveRestaurant model.selectedRestaurant), class "btn btn-danger restaurant-remove-btn", disabled (model.selectedRestaurant == Types.emptyRestaurant)] [ FA.minus ]
+             , button [ onClick (Types.AddRestaurant model.selectedRestaurant), class "btn btn-primary restaurant-add-btn"] [ FA.plus ] ]
    :: (renderCreateRestaurantForm model.newRestaurant) )
 
 renderRestaurant : Types.Restaurant -> Html Types.Msg
