@@ -19,7 +19,7 @@ config :meshi, Meshi.Endpoint,
   secret_key_base: Map.fetch!(System.get_env(), "SECRET_KEY_BASE")
 
 # Do not print debug messages in production
-config :logger, :console, level: :info
+config :logger, :console, level: :debug
 
 config :meshi, Meshi.Repo,
   adapter: Ecto.Adapters.Postgres,
