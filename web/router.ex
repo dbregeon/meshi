@@ -1,34 +1,7 @@
-defmodule Meshi.Slack.Plug do
-  def init(opts), do: opts
-  def call(conn, opts) do
-    conn
-    |> Plug.Conn.assign(:name, Keyword.get(opts, :name, "Slack Plug"))
-    |> Meshi.Slack.Router.call(opts)
-  end
-end
-
-defmodule Meshi.Slack.Router do
-  use Plug.Router
-
-  plug :match
-  plug :dispatch
-
-  # Slack will periodically send get requests
-  # to make sure the bot is still alive.
-  get "/" do
-    send_resp(conn, 200, "")
-  end
-
-  post "/" do
-    Meshi.SlackSender.sendmsg "Yeah!"
-    send_resp(conn, 200, "")
-  end
-  match _, do: send_resp(conn, 404, "Not found")
-end
-
 defmodule Meshi.Router do
   use Meshi.Web, :router
   require Ueberauth
+  require Logger
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -40,6 +13,12 @@ defmodule Meshi.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  pipeline :slack do
+    plug :accepts, ["json"]
+    plug Plug.Parsers, parsers: [:urlencoded]
+    plug :token_match
   end
 
   scope "/api", Meshi do
@@ -55,9 +34,13 @@ defmodule Meshi.Router do
   end
 
   scope "/slack/webhook", Meshi do
-    pipe_through :api # Use the default api stack
+    pipe_through :slack # Use the slack stack
 
-    forward "/", Slack.Plug, name: "Hello Slack"
+    # Slack will periodically send get requests
+    # to make sure the bot is still alive.
+    get "/", SlackController, :ping
+
+    post "/", SlackController, :query
   end
 
   scope "/auth", Meshi do
@@ -69,6 +52,15 @@ defmodule Meshi.Router do
     delete "/logout", AuthController, :delete
   end
 
+  defp token_match(conn, _params) do
+    slack_token = Application.get_env(:meshi, :slack_token)
+    case conn.params do
+      %{"token" => token} when token == slack_token ->
+          conn
+      _ ->
+        conn |> put_status(:bad_request) |> send_resp(404, "bad request") |> halt
+    end
+  end
   # Other scopes may use custom stacks.
   # scope "/api", Meshi do
   #   pipe_through :api

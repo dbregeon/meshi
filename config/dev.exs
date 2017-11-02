@@ -27,7 +27,6 @@ config :meshi, Meshi.Endpoint,
   watchers: [node: ["node_modules/brunch/bin/brunch", "watch", "--stdin",
                     cd: Path.expand("../", __DIR__)]]
 
-
 # Watch static and templates for browser reloading.
 config :meshi, Meshi.Endpoint,
   live_reload: [
@@ -54,3 +53,11 @@ config :meshi, Meshi.Repo,
   database: "meshi_dev",
   hostname: "localhost",
   pool_size: 10
+
+config :ueberauth, Ueberauth.Strategy.Google.OAuth,
+  client_id: "google_id",
+  client_secret: "google_secret"
+
+config :meshi,
+  incoming_slack_webhook: "https://hooks.slack.com/services/dummy_hook",
+  slack_token: "test"
