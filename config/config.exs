@@ -9,7 +9,7 @@ use Mix.Config
 config :meshi,
   ecto_repos: [Meshi.Repo],
   incoming_slack_webhook: System.get_env("SLACK_INCOMING_WEBHOOK"),
-  slack_verification_token: System.get_env("SLACK_TOKEN")
+  slack_token: System.get_env("SLACK_TOKEN")
 
 # Configures the endpoint
 config :meshi, Meshi.Endpoint,
