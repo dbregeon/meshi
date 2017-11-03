@@ -12,15 +12,15 @@ view model =
   div [ class "restaurants-panel"]
       [ (renderRestaurantMaster model)
       , div [class "restaurant-detail col-md-8 col-sm-12"]
-        [ iframe [src model.selectedRestaurant.url, style [("border", "0")]] [] ]
+        [ iframe [src (Maybe.withDefault "" (Maybe.map (\r->r.url) model.selectedRestaurant)), style [("border", "0")]] [] ]
       ]
 
 renderRestaurantMaster: Types.Model -> Html Types.Msg
 renderRestaurantMaster model =
   div [ class "restaurant-master col-md-4 col-sm-12" ]
    ( (renderRestaurantList model.restaurantList model.selectedRestaurant)
-   :: div [] [ button [ onClick (Types.RemoveRestaurant model.selectedRestaurant), class "btn btn-danger restaurant-remove-btn", disabled (model.selectedRestaurant == Types.emptyRestaurant)] [ FA.minus ]
-             , button [ onClick (Types.AddRestaurant model.selectedRestaurant), class "btn btn-primary restaurant-add-btn"] [ FA.plus ] ]
+   :: div [] [ button [ onClick (Types.RemoveSelectedRestaurant), class "btn btn-danger restaurant-remove-btn", disabled (Maybe.withDefault True (Maybe.map (\r->False) model.selectedRestaurant) )] [ FA.minus ]
+             , button [ onClick (Types.AddRestaurant), class "btn btn-primary restaurant-add-btn"] [ FA.plus ] ]
    :: (renderCreateRestaurantForm model.newRestaurant) )
 
 renderRestaurant : Types.Restaurant -> Html Types.Msg
@@ -28,7 +28,7 @@ renderRestaurant restaurant =
  span [ class "restaurant" ]
   [ strong [ ] [ text restaurant.name ] ]
 
-renderRestaurantList : Types.Restaurants -> Types.Restaurant -> Html Types.Msg
+renderRestaurantList : Types.Restaurants -> Maybe Types.Restaurant -> Html Types.Msg
 renderRestaurantList restaurants selection =
  ul [ class "list-group restaurant-list" ] ( List.map
    (\r -> li [ class (selectionClass r selection), onClick (Types.SelectRestaurant r) ]
@@ -36,18 +36,20 @@ renderRestaurantList restaurants selection =
           , span [ onClick (Types.EditRestaurant r), class "btn restaurant-edit-btn"] [ FA.edit ] ])
    restaurants )
 
-selectionClass : Types.Restaurant -> Types.Restaurant -> String
+selectionClass : Types.Restaurant -> Maybe Types.Restaurant -> String
 selectionClass restaurant selection =
-  if restaurant == selection then "restaurant-selected list-group-item" else "list-group-item"
+  String.append "list-group-item" (case selection of
+    Just selectedRestaurant -> if restaurant == selectedRestaurant then " restaurant-selected" else ""
+    _ -> "")
 
-renderCreateRestaurantForm : Maybe Types.Restaurant -> List (Html Types.Msg)
+renderCreateRestaurantForm : Maybe (Types.Input Types.RestaurantForm) -> List (Html Types.Msg)
 renderCreateRestaurantForm model =
   case model of
     Nothing ->
       []
     Just restaurant ->
       [ div [ class "dropdown restaurant-create form-inline" ]
-        [ input [ class "form-control", type_ "name", placeholder "Name", onInput Types.Name, value restaurant.name ] []
-        , input [ class "form-control", type_ "url", placeholder "Url", onInput Types.Url, value restaurant.url ] []
-        , button [ onClick (Types.Create restaurant), class "btn btn-primary" ] [ text "Add" ]
+        [ input [ class "form-control", type_ "name", placeholder "Name", onInput Types.Name, value restaurant.value.name.value ] []
+        , input [ class "form-control", type_ "url", placeholder "Url", onInput Types.Url, value restaurant.value.url.value ] []
+        , button [ onClick (Types.Create restaurant.value), class "btn btn-primary", disabled (Types.restaurantFormIsValid restaurant) ] [ text "Add" ]
         ] ]

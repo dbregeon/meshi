@@ -11122,24 +11122,81 @@ var _user$project$Restaurants_Types$encodeRestaurant = function (model) {
 			_0: {
 				ctor: '_Tuple2',
 				_0: 'name',
-				_1: _elm_lang$core$Json_Encode$string(model.name)
+				_1: _elm_lang$core$Json_Encode$string(model.name.value)
 			},
 			_1: {
 				ctor: '::',
 				_0: {
 					ctor: '_Tuple2',
 					_0: 'url',
-					_1: _elm_lang$core$Json_Encode$string(model.url)
+					_1: _elm_lang$core$Json_Encode$string(model.url.value)
 				},
 				_1: {ctor: '[]'}
 			}
 		});
 };
-var _user$project$Restaurants_Types$emptyRestaurant = {id: -1, name: '', url: '', postedBy: '', postedOn: ''};
+var _user$project$Restaurants_Types$validateUrl = function (f) {
+	var current = f.url.value;
+	var prefix = 'https://www.google.com/maps/embed?pb=';
+	return {
+		value: current,
+		error: A2(_elm_lang$core$String$startsWith, prefix, current) ? _elm_lang$core$Maybe$Just(
+			A2(_elm_lang$core$String$append, 'should start with ', prefix)) : _elm_lang$core$Maybe$Nothing
+	};
+};
+var _user$project$Restaurants_Types$validateName = function (f) {
+	var current = f.name.value;
+	return {
+		value: current,
+		error: function () {
+			var _p0 = current;
+			if (_p0 === '') {
+				return _elm_lang$core$Maybe$Just('cannot be empty');
+			} else {
+				return _elm_lang$core$Maybe$Nothing;
+			}
+		}()
+	};
+};
+var _user$project$Restaurants_Types$restaurantFormIsValid = function (form) {
+	var _p1 = {
+		ctor: '::',
+		_0: form.error,
+		_1: {
+			ctor: '::',
+			_0: form.value.name.error,
+			_1: {
+				ctor: '::',
+				_0: form.value.url.error,
+				_1: {ctor: '[]'}
+			}
+		}
+	};
+	if (((((((_p1.ctor === '::') && (_p1._0.ctor === 'Nothing')) && (_p1._1.ctor === '::')) && (_p1._1._0.ctor === 'Nothing')) && (_p1._1._1.ctor === '::')) && (_p1._1._1._0.ctor === 'Nothing')) && (_p1._1._1._1.ctor === '[]')) {
+		return true;
+	} else {
+		return false;
+	}
+};
+var _user$project$Restaurants_Types$validateRestaurantForm = function (form) {
+	var validatedUrl = _user$project$Restaurants_Types$validateUrl(form);
+	var validatedName = _user$project$Restaurants_Types$validateName(form);
+	return {
+		value: {name: validatedName, url: validatedUrl},
+		error: _elm_lang$core$Maybe$Nothing
+	};
+};
+var _user$project$Restaurants_Types$emptyRestaurantForm = {
+	value: {
+		name: {value: '', error: _elm_lang$core$Maybe$Nothing},
+		url: {value: '', error: _elm_lang$core$Maybe$Nothing}
+	},
+	error: _elm_lang$core$Maybe$Nothing
+};
 var _user$project$Restaurants_Types$initialModel = {
 	restaurantList: {ctor: '[]'},
 	newRestaurant: _elm_lang$core$Maybe$Nothing,
-	selectedRestaurant: _user$project$Restaurants_Types$emptyRestaurant
+	selectedRestaurant: _elm_lang$core$Maybe$Nothing
 };
 var _user$project$Restaurants_Types$Restaurant = F5(
 	function (a, b, c, d, e) {
@@ -11169,6 +11226,14 @@ var _user$project$Restaurants_Types$decodeRestaurantResponse = A2(
 		_1: {ctor: '[]'}
 	},
 	_user$project$Restaurants_Types$decodeRestaurantData);
+var _user$project$Restaurants_Types$RestaurantForm = F2(
+	function (a, b) {
+		return {name: a, url: b};
+	});
+var _user$project$Restaurants_Types$Input = F2(
+	function (a, b) {
+		return {value: a, error: b};
+	});
 var _user$project$Restaurants_Types$Model = F3(
 	function (a, b, c) {
 		return {restaurantList: a, newRestaurant: b, selectedRestaurant: c};
@@ -11194,12 +11259,8 @@ var _user$project$Restaurants_Types$SelectRestaurant = function (a) {
 var _user$project$Restaurants_Types$EditRestaurant = function (a) {
 	return {ctor: 'EditRestaurant', _0: a};
 };
-var _user$project$Restaurants_Types$RemoveRestaurant = function (a) {
-	return {ctor: 'RemoveRestaurant', _0: a};
-};
-var _user$project$Restaurants_Types$AddRestaurant = function (a) {
-	return {ctor: 'AddRestaurant', _0: a};
-};
+var _user$project$Restaurants_Types$RemoveSelectedRestaurant = {ctor: 'RemoveSelectedRestaurant'};
+var _user$project$Restaurants_Types$AddRestaurant = {ctor: 'AddRestaurant'};
 var _user$project$Restaurants_Types$HideRestaurant = function (a) {
 	return {ctor: 'HideRestaurant', _0: a};
 };
@@ -11243,7 +11304,7 @@ var _user$project$Restaurants_View$renderCreateRestaurantForm = function (model)
 										_0: _elm_lang$html$Html_Events$onInput(_user$project$Restaurants_Types$Name),
 										_1: {
 											ctor: '::',
-											_0: _elm_lang$html$Html_Attributes$value(_p1.name),
+											_0: _elm_lang$html$Html_Attributes$value(_p1.value.name.value),
 											_1: {ctor: '[]'}
 										}
 									}
@@ -11269,7 +11330,7 @@ var _user$project$Restaurants_View$renderCreateRestaurantForm = function (model)
 											_0: _elm_lang$html$Html_Events$onInput(_user$project$Restaurants_Types$Url),
 											_1: {
 												ctor: '::',
-												_0: _elm_lang$html$Html_Attributes$value(_p1.url),
+												_0: _elm_lang$html$Html_Attributes$value(_p1.value.url.value),
 												_1: {ctor: '[]'}
 											}
 										}
@@ -11284,11 +11345,16 @@ var _user$project$Restaurants_View$renderCreateRestaurantForm = function (model)
 								{
 									ctor: '::',
 									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$Restaurants_Types$Create(_p1)),
+										_user$project$Restaurants_Types$Create(_p1.value)),
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Attributes$class('btn btn-primary'),
-										_1: {ctor: '[]'}
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$html$Html_Attributes$disabled(
+												_user$project$Restaurants_Types$restaurantFormIsValid(_p1)),
+											_1: {ctor: '[]'}
+										}
 									}
 								},
 								{
@@ -11306,7 +11372,17 @@ var _user$project$Restaurants_View$renderCreateRestaurantForm = function (model)
 };
 var _user$project$Restaurants_View$selectionClass = F2(
 	function (restaurant, selection) {
-		return _elm_lang$core$Native_Utils.eq(restaurant, selection) ? 'restaurant-selected list-group-item' : 'list-group-item';
+		return A2(
+			_elm_lang$core$String$append,
+			'list-group-item',
+			function () {
+				var _p2 = selection;
+				if (_p2.ctor === 'Just') {
+					return _elm_lang$core$Native_Utils.eq(restaurant, _p2._0) ? ' restaurant-selected' : '';
+				} else {
+					return '';
+				}
+			}());
 	});
 var _user$project$Restaurants_View$renderRestaurant = function (restaurant) {
 	return A2(
@@ -11404,15 +11480,22 @@ var _user$project$Restaurants_View$renderRestaurantMaster = function (model) {
 							_elm_lang$html$Html$button,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Events$onClick(
-									_user$project$Restaurants_Types$RemoveRestaurant(model.selectedRestaurant)),
+								_0: _elm_lang$html$Html_Events$onClick(_user$project$Restaurants_Types$RemoveSelectedRestaurant),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$class('btn btn-danger restaurant-remove-btn'),
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Attributes$disabled(
-											_elm_lang$core$Native_Utils.eq(model.selectedRestaurant, _user$project$Restaurants_Types$emptyRestaurant)),
+											A2(
+												_elm_lang$core$Maybe$withDefault,
+												true,
+												A2(
+													_elm_lang$core$Maybe$map,
+													function (r) {
+														return false;
+													},
+													model.selectedRestaurant))),
 										_1: {ctor: '[]'}
 									}
 								}
@@ -11428,8 +11511,7 @@ var _user$project$Restaurants_View$renderRestaurantMaster = function (model) {
 								_elm_lang$html$Html$button,
 								{
 									ctor: '::',
-									_0: _elm_lang$html$Html_Events$onClick(
-										_user$project$Restaurants_Types$AddRestaurant(model.selectedRestaurant)),
+									_0: _elm_lang$html$Html_Events$onClick(_user$project$Restaurants_Types$AddRestaurant),
 									_1: {
 										ctor: '::',
 										_0: _elm_lang$html$Html_Attributes$class('btn btn-primary restaurant-add-btn'),
@@ -11474,7 +11556,16 @@ var _user$project$Restaurants_View$view = function (model) {
 							_elm_lang$html$Html$iframe,
 							{
 								ctor: '::',
-								_0: _elm_lang$html$Html_Attributes$src(model.selectedRestaurant.url),
+								_0: _elm_lang$html$Html_Attributes$src(
+									A2(
+										_elm_lang$core$Maybe$withDefault,
+										'',
+										A2(
+											_elm_lang$core$Maybe$map,
+											function (r) {
+												return r.url;
+											},
+											model.selectedRestaurant))),
 								_1: {
 									ctor: '::',
 									_0: _elm_lang$html$Html_Attributes$style(
@@ -11581,7 +11672,7 @@ var _user$project$Restaurants_State$update = F2(
 									return !_elm_lang$core$Native_Utils.eq(_p0._0, r);
 								},
 								model.restaurantList),
-							selectedRestaurant: _user$project$Restaurants_Types$emptyRestaurant
+							selectedRestaurant: _elm_lang$core$Maybe$Nothing
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
@@ -11593,56 +11684,75 @@ var _user$project$Restaurants_State$update = F2(
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
 						{
-							newRestaurant: _elm_lang$core$Maybe$Just(_user$project$Restaurants_Types$emptyRestaurant)
+							newRestaurant: _elm_lang$core$Maybe$Just(_user$project$Restaurants_Types$emptyRestaurantForm)
 						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
-			case 'RemoveRestaurant':
-				return {
-					ctor: '_Tuple2',
-					_0: model,
-					_1: _user$project$Restaurants_State$deleteRestaurant(_p0._0)
-				};
+			case 'RemoveSelectedRestaurant':
+				var _p2 = model.selectedRestaurant;
+				if (_p2.ctor === 'Just') {
+					return {
+						ctor: '_Tuple2',
+						_0: model,
+						_1: _user$project$Restaurants_State$deleteRestaurant(_p2._0)
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'SelectRestaurant':
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						model,
-						{selectedRestaurant: _p0._0}),
+						{
+							selectedRestaurant: _elm_lang$core$Maybe$Just(_p0._0)
+						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'Name':
-				var updatedCreateRestaurant = A2(
-					_elm_lang$core$Maybe$map,
-					function (r) {
-						return _elm_lang$core$Native_Utils.update(
-							r,
-							{name: _p0._0});
-					},
-					model.newRestaurant);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{newRestaurant: updatedCreateRestaurant}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+				var _p3 = model.newRestaurant;
+				if (_p3.ctor === 'Just') {
+					var currentValue = _p3._0.value;
+					var updatedCreateRestaurant = _elm_lang$core$Native_Utils.update(
+						currentValue,
+						{
+							name: {value: _p0._0, error: _elm_lang$core$Maybe$Nothing}
+						});
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								newRestaurant: _elm_lang$core$Maybe$Just(
+									_user$project$Restaurants_Types$validateRestaurantForm(updatedCreateRestaurant))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'Url':
-				var updatedCreateRestaurant = A2(
-					_elm_lang$core$Maybe$map,
-					function (r) {
-						return _elm_lang$core$Native_Utils.update(
-							r,
-							{url: _p0._0});
-					},
-					model.newRestaurant);
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						model,
-						{newRestaurant: updatedCreateRestaurant}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
+				var _p4 = model.newRestaurant;
+				if (_p4.ctor === 'Just') {
+					var currentValue = _p4._0.value;
+					var updatedCreateRestaurant = _elm_lang$core$Native_Utils.update(
+						currentValue,
+						{
+							url: {value: _p0._0, error: _elm_lang$core$Maybe$Nothing}
+						});
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								newRestaurant: _elm_lang$core$Maybe$Just(
+									_user$project$Restaurants_Types$validateRestaurantForm(updatedCreateRestaurant))
+							}),
+						_1: _elm_lang$core$Platform_Cmd$none
+					};
+				} else {
+					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
+				}
 			case 'Create':
 				return {
 					ctor: '_Tuple2',
@@ -11650,8 +11760,8 @@ var _user$project$Restaurants_State$update = F2(
 					_1: _user$project$Restaurants_State$createRestaurant(_p0._0)
 				};
 			case 'CreateResult':
-				var _p2 = _p0._0;
-				if (_p2.ctor === 'Ok') {
+				var _p5 = _p0._0;
+				if (_p5.ctor === 'Ok') {
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
@@ -11662,17 +11772,17 @@ var _user$project$Restaurants_State$update = F2(
 				} else {
 					return A2(
 						_elm_lang$core$Debug$log,
-						_elm_lang$core$Basics$toString(_p2._0),
+						_elm_lang$core$Basics$toString(_p5._0),
 						{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none});
 				}
 			default:
-				var _p3 = _p0._0;
-				if (_p3.ctor === 'Ok') {
+				var _p6 = _p0._0;
+				if (_p6.ctor === 'Ok') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
 					return A2(
 						_elm_lang$core$Debug$log,
-						_elm_lang$core$Basics$toString(_p3._0),
+						_elm_lang$core$Basics$toString(_p6._0),
 						{ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none});
 				}
 		}

@@ -9,20 +9,26 @@ type alias Restaurant =
 
 type alias Restaurants = List Restaurant
 
+type alias RestaurantForm =
+  { name : Input String, url : Input String }
+
+type alias Input a =
+  {value: a, error: Maybe String}
+
 type alias Model =
   { restaurantList : Restaurants
-  , newRestaurant : Maybe Restaurant
-  , selectedRestaurant : Restaurant }
+  , newRestaurant : Maybe (Input RestaurantForm)
+  , selectedRestaurant : Maybe Restaurant }
 
 type Msg
   = UpdateRestaurants (Result Http.Error Restaurants)
   | ShowRestaurant Restaurant
   | HideRestaurant Restaurant
-  | AddRestaurant Restaurant
-  | RemoveRestaurant Restaurant
+  | AddRestaurant
+  | RemoveSelectedRestaurant
   | EditRestaurant Restaurant
   | SelectRestaurant Restaurant
-  | Create Restaurant
+  | Create RestaurantForm
   | Name String
   | Url String
   | CreateResult (Result Http.Error Restaurant)
@@ -32,12 +38,47 @@ initialModel : Model
 initialModel =
   { restaurantList = []
   , newRestaurant = Nothing
-  , selectedRestaurant = emptyRestaurant
+  , selectedRestaurant = Nothing
   }
 
-emptyRestaurant: Restaurant
-emptyRestaurant =
-  {id=-1, name = "", url = "", postedBy = "", postedOn = ""}
+emptyRestaurantForm: Input RestaurantForm
+emptyRestaurantForm =
+  {value = {name = { value = "", error = Nothing }, url = { value = "", error = Nothing }}, error = Nothing}
+
+validateRestaurantForm: RestaurantForm -> Input RestaurantForm
+validateRestaurantForm form =
+  let
+    validatedName = validateName(form)
+    validatedUrl  = validateUrl(form)
+  in
+    {value = { name = validatedName, url = validatedUrl}, error = Nothing }
+
+restaurantFormIsValid: Input RestaurantForm -> Bool
+restaurantFormIsValid form =
+  case [form.error, form.value.name.error, form.value.url.error] of
+    [Nothing, Nothing, Nothing] -> True
+    _ -> False
+
+validateName: RestaurantForm -> Input String
+validateName f =
+  let
+    current = f.name.value
+  in
+    { value = current, error = (case current of
+    "" -> Just "cannot be empty"
+    _  -> Nothing) }
+
+
+validateUrl: RestaurantForm -> Input String
+validateUrl f =
+  let
+    -- Google Map Embed URL.
+    prefix = "https://www.google.com/maps/embed?pb="
+    current = f.url.value
+  in
+    { value = current, error = (if String.startsWith prefix current
+      then Just (String.append "should start with " prefix)
+      else Nothing) }
 
 decodeRestaurantFetch : Decode.Decoder (List Restaurant)
 decodeRestaurantFetch =
@@ -56,9 +97,9 @@ decodeRestaurantData =
     (Decode.field "posted_by" Decode.string)
     (Decode.field "posted_on" Decode.string)
 
-encodeRestaurant: Restaurant -> Encode.Value
+encodeRestaurant: RestaurantForm -> Encode.Value
 encodeRestaurant model =
     Encode.object
-        [ ("name", Encode.string model.name)
-        , ("url", Encode.string model.url)
+        [ ("name", Encode.string model.name.value)
+        , ("url", Encode.string model.url.value)
         ]

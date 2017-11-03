@@ -35,8 +35,6 @@ Ready to run in production? Please [check phoenix deployment guides](http://www.
 ## TODO
 
 * Add the Rating model in Phoenix.
-* Add url validation to ensure they are google map embeds
-* Add validation of user name to restrict login to a company
 * Enforce login
 * Add tests.
 * Enrich slack dialog.

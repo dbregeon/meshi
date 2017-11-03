@@ -18,25 +18,37 @@ update msg model =
     Types.ShowRestaurant restaurant ->
       ( { model | restaurantList = restaurant :: model.restaurantList }, Cmd.none )
     Types.HideRestaurant restaurant ->
-      ( { model | restaurantList = (List.filter (\r -> restaurant /= r) model.restaurantList), selectedRestaurant = Types.emptyRestaurant }, Cmd.none )
+      ( { model | restaurantList = (List.filter (\r -> restaurant /= r) model.restaurantList), selectedRestaurant = Nothing }, Cmd.none )
     Types.EditRestaurant restaurant ->
       ( model, Cmd.none )
-    Types.AddRestaurant restaurant ->
-      ( { model | newRestaurant = (Just Types.emptyRestaurant) }, Cmd.none )
-    Types.RemoveRestaurant restaurant ->
-      (model, deleteRestaurant (restaurant))
+    Types.AddRestaurant ->
+      ( { model | newRestaurant = (Just Types.emptyRestaurantForm) }, Cmd.none )
+    Types.RemoveSelectedRestaurant ->
+      case model.selectedRestaurant of
+        Just restaurant -> (model, deleteRestaurant (restaurant))
+        _ -> ( model, Cmd.none )
     Types.SelectRestaurant restaurant ->
-      ( { model | selectedRestaurant = restaurant }, Cmd.none )
+      ( { model | selectedRestaurant = Just restaurant }, Cmd.none )
     Types.Name name ->
-      let
-        updatedCreateRestaurant = Maybe.map (\r -> { r | name = name }) model.newRestaurant
-      in
-        ({ model | newRestaurant = updatedCreateRestaurant }, Cmd.none)
+      case model.newRestaurant of
+        Just newRestaurantForm ->
+          let
+            currentValue = newRestaurantForm.value
+            updatedCreateRestaurant = { currentValue | name = { value = name, error = Nothing } }
+          in
+            ({ model | newRestaurant = Just (Types.validateRestaurantForm updatedCreateRestaurant) }, Cmd.none)
+        _ ->
+            ( model, Cmd.none )
     Types.Url url ->
-      let
-        updatedCreateRestaurant = Maybe.map (\r -> { r | url = url }) model.newRestaurant
-      in
-        ({ model | newRestaurant = updatedCreateRestaurant }, Cmd.none)
+      case model.newRestaurant of
+        Just newRestaurantForm ->
+          let
+            currentValue = newRestaurantForm.value
+            updatedCreateRestaurant = { currentValue | url = { value = url, error = Nothing } }
+          in
+            ({ model | newRestaurant = Just (Types.validateRestaurantForm updatedCreateRestaurant) }, Cmd.none)
+        _ ->
+          ( model, Cmd.none )
     Types.Create restaurant ->
       (model, createRestaurant (restaurant))
     Types.CreateResult result ->
@@ -54,7 +66,7 @@ update msg model =
           Debug.log (toString error)
           (model, Cmd.none)
 
-createRestaurant : Types.Restaurant -> Cmd Types.Msg
+createRestaurant : Types.RestaurantForm -> Cmd Types.Msg
 createRestaurant restaurant =
   let
     url = "/api/restaurants"
