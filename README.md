@@ -1,15 +1,20 @@
 # Meshi
 
+This application is intended to support small teams find a decent lunch place that is satisfactory to a particular lunch party.
+
+It uses google embedded maps and authentication for the web front-end and integrates with slack for querying recommended restaurants.
+
+The technology stack is Elixir/Phoenix for the backend and Elm for the front end.
+
 ## Pre-requisites
 
   * Elixir ([Installing Elixir](http://elixir-lang.github.io/install.html))
-  * Erlang development tools (`erlang-dev` and `erlang-parsetools`)
-  * PostgreSQL server
-  * elm (install with `npm install -g elm`)
+  * PostgreSQL server (([Installation Guides](https://wiki.postgresql.org/wiki/Detailed_installation_guides))
+  * Elm ([Installing Elm](https://guide.elm-lang.org/install.html))
 
 ## Running
 
-To start your Phoenix app:
+To start Meshi app:
 
   * Install dependencies with `mix deps.get`
   * Create and migrate your database with `mix ecto.create && mix ecto.migrate`
@@ -18,18 +23,19 @@ To start your Phoenix app:
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](http://www.phoenixframework.org/docs/deployment).
+Ready to run in production? Please [check phoenix deployment guides](http://www.phoenixframework.org/docs/deployment).
 
 ## Learn more
 
-  * Official website: http://www.phoenixframework.org/
-  * Guides: http://phoenixframework.org/docs/overview
-  * Docs: https://hexdocs.pm/phoenix
-  * Mailing list: http://groups.google.com/group/phoenix-talk
-  * Source: https://github.com/phoenixframework/phoenix
+  * Phoenix Official website: http://www.phoenixframework.org/
+  * Elm Official website: http://elm-lang.org/
+  * Elm/Phoenix tutorial: http://codeloveandboards.com/blog/2017/02/02/phoenix-and-elm-a-real-use-case-pt-1/
 
-TODO:
- Add the Restaurant model in Phoenix.
- Finish the http://codeloveandboards.com/blog/2017/02/08/phoenix-and-elm-a-real-use-case-pt-2/ example
- Add bootstrap
+## TODO
 
+* Add the Rating model in Phoenix.
+* Add url validation to ensure they are google map embeds
+* Add validation of user name to restrict login to a company
+* Enforce login
+* Add tests.
+* Enrich slack dialog.
