@@ -30,6 +30,7 @@ Ready to run in production? Please [check phoenix deployment guides](http://www.
   * Phoenix Official website: http://www.phoenixframework.org/
   * Elm Official website: http://elm-lang.org/
   * Elm/Phoenix tutorial: http://codeloveandboards.com/blog/2017/02/02/phoenix-and-elm-a-real-use-case-pt-1/
+  * Ueberauth: https://github.com/ueberauth
 
 ## TODO
 

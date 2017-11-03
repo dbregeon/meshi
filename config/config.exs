@@ -25,7 +25,8 @@ config :logger, :console,
   metadata: [:request_id]
 
 config :ueberauth, Ueberauth,
-  providers: [google: {Ueberauth.Strategy.Google, []}]
+  # hd option for google restricts the domain of the users.
+  providers: [google: {Ueberauth.Strategy.Google, [hd: System.get_env("USERS_DOMAIN")]}]
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_CLIENT_ID"),
