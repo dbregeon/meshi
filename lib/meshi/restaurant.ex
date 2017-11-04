@@ -17,5 +17,15 @@ defmodule Meshi.Restaurant do
     restaurant
     |> cast(attrs, [:name, :url, :posted_by, :posted_on])
     |> validate_required([:name, :url, :posted_by, :posted_on])
+    |> validate_url(:url)
+  end
+
+  def validate_url(changeset, field) do
+    validate_change changeset, field, fn _, url ->
+      case url |> String.to_charlist |> :http_uri.parse do
+        {:ok, _} -> []
+        {:error, msg} -> [{field, "invalid url: #{inspect msg}"}]
+      end
+    end
   end
 end
