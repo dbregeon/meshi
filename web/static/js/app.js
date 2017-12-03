@@ -23,7 +23,8 @@ import "phoenix_html"
 // Set up our Elm App
 const elmDiv = document.querySelector('#elm-container');
 const socketUrl = window.socketUrl;
-const elmApp = Elm.App.embed(elmDiv,  { socketUrl });
+const token = window.token;
+const elmApp = Elm.App.embed(elmDiv,  { socketUrl, token });
 
 // var service;
 // var mapDiv;

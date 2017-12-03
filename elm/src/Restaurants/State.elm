@@ -50,7 +50,7 @@ update msg model =
         _ ->
           ( model, Cmd.none )
     Types.Create restaurant ->
-      (model, createRestaurant (restaurant))
+      (model, createRestaurant (restaurant) model.token)
     Types.CreateResult result ->
       case result of
         Ok restaurant ->
@@ -66,16 +66,24 @@ update msg model =
           Debug.log (toString error)
           (model, Cmd.none)
 
-createRestaurant : Types.RestaurantForm -> Cmd Types.Msg
-createRestaurant restaurant =
+createRestaurant : Types.RestaurantForm -> String -> Cmd Types.Msg
+createRestaurant restaurant token =
   let
     url = "/api/restaurants"
     body =
       restaurant
       |> Types.encodeRestaurant
       |> Http.jsonBody
+    post =  Http.request { method = "POST"
+    , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+    , url = url
+    , body = body
+    , expect = Http.expectJson Types.decodeRestaurantResponse
+    , timeout = Nothing
+    , withCredentials = False
+    }
   in
-    Http.send Types.CreateResult (Http.post url body Types.decodeRestaurantResponse)
+    Http.send Types.CreateResult post
 
 deleteRestaurant : Types.Restaurant -> Cmd Types.Msg
 deleteRestaurant restaurant =
@@ -92,9 +100,17 @@ deleteRestaurant restaurant =
   in
     Http.send Types.DeleteResult request
 
-fetchRestaurants : Cmd Types.Msg
-fetchRestaurants =
+fetchRestaurants : String -> Cmd Types.Msg
+fetchRestaurants token  =
   let
     url = "/api/restaurants"
+    get =  Http.request { method = "GET"
+    , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+    , url = url
+    , body = Http.emptyBody
+    , expect = Http.expectJson Types.decodeRestaurantFetch
+    , timeout = Nothing
+    , withCredentials = False
+    }
   in
-    Http.send Types.UpdateRestaurants (Http.get url Types.decodeRestaurantFetch)
+    Http.send Types.UpdateRestaurants get

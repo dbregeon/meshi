@@ -17,7 +17,8 @@ defmodule Meshi.RestaurantController do
   end
 
   def create(conn, params) do
-    changeset = Restaurant.changeset(%Restaurant{posted_on:  DateTime.utc_now, posted_by: "Test"}, params)
+    user = Meshi.Guardian.Plug.current_resource(conn)
+    changeset = Restaurant.changeset(%Restaurant{posted_on:  DateTime.utc_now, posted_by: user.id}, params)
     case Repo.insert(changeset) do
       {:ok, restaurant} ->
        Meshi.Endpoint.broadcast(

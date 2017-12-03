@@ -17,7 +17,8 @@ import Restaurants.State as State
 
 -- MODEL
 type alias Flags =
-    { socketUrl : String }
+    { socketUrl : String
+    , token : String }
 
 type alias Model =
   { restaurants : Types.Model
@@ -40,7 +41,7 @@ type alias SendMsg =
 
 initialModel : Flags -> Model
 initialModel flags =
-  { restaurants = Types.initialModel
+  { restaurants = Types.initialModel flags.token
   , phxSocket =  initPhxSocket flags }
 
 initPhxSocket : Flags -> Phoenix.Socket.Socket Msg
@@ -59,7 +60,7 @@ init flags =
     ( phxSocket, phxCmd ) = Phoenix.Socket.join channel model.phxSocket
   in
     ( { model | phxSocket = phxSocket }
-    , Cmd.batch [ Cmd.map PhoenixMsg phxCmd, Cmd.map RestaurantsMsg State.fetchRestaurants, (Ports.ready "ready") ])
+    , Cmd.batch [ Cmd.map PhoenixMsg phxCmd, Cmd.map RestaurantsMsg (State.fetchRestaurants flags.token), (Ports.ready "ready") ])
 
 -- UPDATE
 

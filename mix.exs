@@ -42,6 +42,7 @@ defmodule Meshi.Mixfile do
       {:gettext, "~> 0.11"},
       {:cowboy, "~> 1.0"},
       {:ueberauth_google, "~> 0.5.0"},
+      {:guardian, "~> 1.0"},
       {:httpoison, "~> 0.13.0"}
     ]
   end

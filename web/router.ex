@@ -13,6 +13,10 @@ defmodule Meshi.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug Guardian.Plug.Pipeline, module: Meshi.Guardian, error_handler: Meshi.AuthErrorHandler
+    plug Guardian.Plug.VerifyHeader, realm: "Bearer"
+    plug Guardian.Plug.VerifySession
+    plug Guardian.Plug.LoadResource
   end
 
   pipeline :slack do

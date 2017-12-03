@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
+    <%= if Guardian.Plug.current_token(@conn) do %>
+      <meta name="guardian_token" content="<%= Guardian.Plug.current_token(@conn) %>">
+    <% end %>
 
     <title>Meshi!</title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
@@ -35,13 +38,22 @@
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 
       <main role="main">
-        <%= render @view_module, @view_template, assigns %>
+        <%= if @current_user do %>
+          <%= render @view_module, @view_template, assigns %>
+        <% else %>
+          <div style="width: 100%; height: 400px; text-align: center; font-size: 60px;">Please sign-in</div>
+        <% end %>
       </main>
 
     </div> <!-- /container -->
     <div>Logo made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKj8Np2MfBq4GA7sxmyy3gQSOhKhhJPRk&libraries=places"></script>
-    <script>window.socketUrl = '<%= Meshi.LayoutView.socket_url %>';</script>
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <%= if @current_user do %>
+      <script>
+        window.socketUrl = '<%= Meshi.LayoutView.socket_url(@current_user) %>';
+        window.token = '<%= Meshi.LayoutView.token(@current_user) %>'
+      </script>
+      <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <% end %>
   </body>
 </html>

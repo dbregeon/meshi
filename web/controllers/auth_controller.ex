@@ -4,6 +4,7 @@ defmodule Meshi.AuthController do
 
   def delete(conn, _params) do
     conn
+    |> Meshi.Guardian.Plug.sign_out()
     |> put_flash(:info, "You have been logged out!")
     |> configure_session(drop: true)
     |> redirect(to: "/")
@@ -20,6 +21,7 @@ defmodule Meshi.AuthController do
       {:ok, user} ->
         conn
         |> put_flash(:info, "Successfully authenticated.")
+        |> Meshi.Guardian.Plug.sign_in(user)
         |> put_session(:current_user, user)
         |> redirect(to: "/")
       {:error, reason} ->

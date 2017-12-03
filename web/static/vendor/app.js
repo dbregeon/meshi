@@ -11193,10 +11193,13 @@ var _user$project$Restaurants_Types$emptyRestaurantForm = {
 	},
 	error: _elm_lang$core$Maybe$Nothing
 };
-var _user$project$Restaurants_Types$initialModel = {
-	restaurantList: {ctor: '[]'},
-	newRestaurant: _elm_lang$core$Maybe$Nothing,
-	selectedRestaurant: _elm_lang$core$Maybe$Nothing
+var _user$project$Restaurants_Types$initialModel = function (token) {
+	return {
+		restaurantList: {ctor: '[]'},
+		newRestaurant: _elm_lang$core$Maybe$Nothing,
+		selectedRestaurant: _elm_lang$core$Maybe$Nothing,
+		token: token
+	};
 };
 var _user$project$Restaurants_Types$Restaurant = F5(
 	function (a, b, c, d, e) {
@@ -11234,9 +11237,9 @@ var _user$project$Restaurants_Types$Input = F2(
 	function (a, b) {
 		return {value: a, error: b};
 	});
-var _user$project$Restaurants_Types$Model = F3(
-	function (a, b, c) {
-		return {restaurantList: a, newRestaurant: b, selectedRestaurant: c};
+var _user$project$Restaurants_Types$Model = F4(
+	function (a, b, c, d) {
+		return {restaurantList: a, newRestaurant: b, selectedRestaurant: c, token: d};
 	});
 var _user$project$Restaurants_Types$DeleteResult = function (a) {
 	return {ctor: 'DeleteResult', _0: a};
@@ -11591,13 +11594,27 @@ var _user$project$Restaurants_Ports$googleMap = _elm_lang$core$Native_Platform.o
 		return v;
 	});
 
-var _user$project$Restaurants_State$fetchRestaurants = function () {
+var _user$project$Restaurants_State$fetchRestaurants = function (token) {
 	var url = '/api/restaurants';
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$Restaurants_Types$UpdateRestaurants,
-		A2(_elm_lang$http$Http$get, url, _user$project$Restaurants_Types$decodeRestaurantFetch));
-}();
+	var get = _elm_lang$http$Http$request(
+		{
+			method: 'GET',
+			headers: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$http$Http$header,
+					'Authorization',
+					A2(_elm_lang$core$Basics_ops['++'], 'Bearer ', token)),
+				_1: {ctor: '[]'}
+			},
+			url: url,
+			body: _elm_lang$http$Http$emptyBody,
+			expect: _elm_lang$http$Http$expectJson(_user$project$Restaurants_Types$decodeRestaurantFetch),
+			timeout: _elm_lang$core$Maybe$Nothing,
+			withCredentials: false
+		});
+	return A2(_elm_lang$http$Http$send, _user$project$Restaurants_Types$UpdateRestaurants, get);
+};
 var _user$project$Restaurants_State$deleteRestaurant = function (restaurant) {
 	var url = _elm_lang$core$String$concat(
 		{
@@ -11621,15 +11638,30 @@ var _user$project$Restaurants_State$deleteRestaurant = function (restaurant) {
 		});
 	return A2(_elm_lang$http$Http$send, _user$project$Restaurants_Types$DeleteResult, request);
 };
-var _user$project$Restaurants_State$createRestaurant = function (restaurant) {
-	var body = _elm_lang$http$Http$jsonBody(
-		_user$project$Restaurants_Types$encodeRestaurant(restaurant));
-	var url = '/api/restaurants';
-	return A2(
-		_elm_lang$http$Http$send,
-		_user$project$Restaurants_Types$CreateResult,
-		A3(_elm_lang$http$Http$post, url, body, _user$project$Restaurants_Types$decodeRestaurantResponse));
-};
+var _user$project$Restaurants_State$createRestaurant = F2(
+	function (restaurant, token) {
+		var body = _elm_lang$http$Http$jsonBody(
+			_user$project$Restaurants_Types$encodeRestaurant(restaurant));
+		var url = '/api/restaurants';
+		var post = _elm_lang$http$Http$request(
+			{
+				method: 'POST',
+				headers: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$http$Http$header,
+						'Authorization',
+						A2(_elm_lang$core$Basics_ops['++'], 'Bearer ', token)),
+					_1: {ctor: '[]'}
+				},
+				url: url,
+				body: body,
+				expect: _elm_lang$http$Http$expectJson(_user$project$Restaurants_Types$decodeRestaurantResponse),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+		return A2(_elm_lang$http$Http$send, _user$project$Restaurants_Types$CreateResult, post);
+	});
 var _user$project$Restaurants_State$update = F2(
 	function (msg, model) {
 		var _p0 = msg;
@@ -11757,7 +11789,7 @@ var _user$project$Restaurants_State$update = F2(
 				return {
 					ctor: '_Tuple2',
 					_0: model,
-					_1: _user$project$Restaurants_State$createRestaurant(_p0._0)
+					_1: A2(_user$project$Restaurants_State$createRestaurant, _p0._0, model.token)
 				};
 			case 'CreateResult':
 				var _p5 = _p0._0;
@@ -11827,9 +11859,10 @@ var _user$project$App$encoder = function (m) {
 				}
 			}));
 };
-var _user$project$App$Flags = function (a) {
-	return {socketUrl: a};
-};
+var _user$project$App$Flags = F2(
+	function (a, b) {
+		return {socketUrl: a, token: b};
+	});
 var _user$project$App$Model = F2(
 	function (a, b) {
 		return {restaurants: a, phxSocket: b};
@@ -11874,7 +11907,7 @@ var _user$project$App$initPhxSocket = function (flags) {
 };
 var _user$project$App$initialModel = function (flags) {
 	return {
-		restaurants: _user$project$Restaurants_Types$initialModel,
+		restaurants: _user$project$Restaurants_Types$initialModel(flags.token),
 		phxSocket: _user$project$App$initPhxSocket(flags)
 	};
 };
@@ -11898,7 +11931,10 @@ var _user$project$App$init = function (flags) {
 				_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$PhoenixMsg, phxCmd),
 				_1: {
 					ctor: '::',
-					_0: A2(_elm_lang$core$Platform_Cmd$map, _user$project$App$RestaurantsMsg, _user$project$Restaurants_State$fetchRestaurants),
+					_0: A2(
+						_elm_lang$core$Platform_Cmd$map,
+						_user$project$App$RestaurantsMsg,
+						_user$project$Restaurants_State$fetchRestaurants(flags.token)),
 					_1: {
 						ctor: '::',
 						_0: _user$project$Ports$ready('ready'),
@@ -11996,8 +12032,13 @@ var _user$project$App$main = _elm_lang$html$Html$programWithFlags(
 	A2(
 		_elm_lang$core$Json_Decode$andThen,
 		function (socketUrl) {
-			return _elm_lang$core$Json_Decode$succeed(
-				{socketUrl: socketUrl});
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				function (token) {
+					return _elm_lang$core$Json_Decode$succeed(
+						{socketUrl: socketUrl, token: token});
+				},
+				A2(_elm_lang$core$Json_Decode$field, 'token', _elm_lang$core$Json_Decode$string));
 		},
 		A2(_elm_lang$core$Json_Decode$field, 'socketUrl', _elm_lang$core$Json_Decode$string)));
 

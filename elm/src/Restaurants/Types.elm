@@ -18,7 +18,8 @@ type alias Input a =
 type alias Model =
   { restaurantList : Restaurants
   , newRestaurant : Maybe (Input RestaurantForm)
-  , selectedRestaurant : Maybe Restaurant }
+  , selectedRestaurant : Maybe Restaurant
+  , token : String }
 
 type Msg
   = UpdateRestaurants (Result Http.Error Restaurants)
@@ -34,11 +35,12 @@ type Msg
   | CreateResult (Result Http.Error Restaurant)
   | DeleteResult (Result Http.Error Restaurant)
 
-initialModel : Model
-initialModel =
+initialModel : String -> Model
+initialModel token =
   { restaurantList = []
   , newRestaurant = Nothing
   , selectedRestaurant = Nothing
+  , token = token
   }
 
 emptyRestaurantForm: Input RestaurantForm
