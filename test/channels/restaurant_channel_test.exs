@@ -8,8 +8,7 @@ defmodule Meshi.RestaurantChannelTest do
     socket()
     |> subscribe_and_join(
       RestaurantChannel,
-      "restaurants",
-      %{claims: "Test Claim", resource: "Test Resource"}
+      "restaurants"
     )
 
     Meshi.Endpoint.broadcast(
@@ -20,12 +19,6 @@ defmodule Meshi.RestaurantChannelTest do
 
     assert_broadcast "new", %{test: "test"}
 
-  end
-
-  test "unauthenticated users cannot join" do
-    assert {:error, %{error: "not authorized, are you logged in?"}} =
-      socket()
-      |> Phoenix.ChannelTest.join(RestaurantChannel, "restaurants")
   end
 
 end

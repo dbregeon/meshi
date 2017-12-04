@@ -25,7 +25,7 @@ update msg model =
       ( { model | newRestaurant = (Just Types.emptyRestaurantForm) }, Cmd.none )
     Types.RemoveSelectedRestaurant ->
       case model.selectedRestaurant of
-        Just restaurant -> (model, deleteRestaurant (restaurant))
+        Just restaurant -> (model, deleteRestaurant (restaurant) model.token)
         _ -> ( model, Cmd.none )
     Types.SelectRestaurant restaurant ->
       ( { model | selectedRestaurant = Just restaurant }, Cmd.none )
@@ -85,12 +85,12 @@ createRestaurant restaurant token =
   in
     Http.send Types.CreateResult post
 
-deleteRestaurant : Types.Restaurant -> Cmd Types.Msg
-deleteRestaurant restaurant =
+deleteRestaurant : Types.Restaurant -> String -> Cmd Types.Msg
+deleteRestaurant restaurant token =
   let
     url = String.concat ["/api/restaurants/", toString restaurant.id]
     request = Http.request { method = "DELETE"
-    , headers = []
+    , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
     , url = url
     , body = Http.emptyBody
     , expect = Http.expectJson Types.decodeRestaurantResponse

@@ -26,7 +26,7 @@ defmodule Meshi.PageControllerTest do
     conn = conn
     |> Plug.Session.call(@signing_opts)
     |> fetch_session
-    |> put_session(:current_user, %{avatar: nil})
+    |> put_session(:current_user, %{id: "Test", avatar: nil})
     |> get("/")
 
     assert html_response(conn, 200) =~ "Logout"

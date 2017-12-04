@@ -11615,29 +11615,37 @@ var _user$project$Restaurants_State$fetchRestaurants = function (token) {
 		});
 	return A2(_elm_lang$http$Http$send, _user$project$Restaurants_Types$UpdateRestaurants, get);
 };
-var _user$project$Restaurants_State$deleteRestaurant = function (restaurant) {
-	var url = _elm_lang$core$String$concat(
-		{
-			ctor: '::',
-			_0: '/api/restaurants/',
-			_1: {
+var _user$project$Restaurants_State$deleteRestaurant = F2(
+	function (restaurant, token) {
+		var url = _elm_lang$core$String$concat(
+			{
 				ctor: '::',
-				_0: _elm_lang$core$Basics$toString(restaurant.id),
-				_1: {ctor: '[]'}
-			}
-		});
-	var request = _elm_lang$http$Http$request(
-		{
-			method: 'DELETE',
-			headers: {ctor: '[]'},
-			url: url,
-			body: _elm_lang$http$Http$emptyBody,
-			expect: _elm_lang$http$Http$expectJson(_user$project$Restaurants_Types$decodeRestaurantResponse),
-			timeout: _elm_lang$core$Maybe$Nothing,
-			withCredentials: false
-		});
-	return A2(_elm_lang$http$Http$send, _user$project$Restaurants_Types$DeleteResult, request);
-};
+				_0: '/api/restaurants/',
+				_1: {
+					ctor: '::',
+					_0: _elm_lang$core$Basics$toString(restaurant.id),
+					_1: {ctor: '[]'}
+				}
+			});
+		var request = _elm_lang$http$Http$request(
+			{
+				method: 'DELETE',
+				headers: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$http$Http$header,
+						'Authorization',
+						A2(_elm_lang$core$Basics_ops['++'], 'Bearer ', token)),
+					_1: {ctor: '[]'}
+				},
+				url: url,
+				body: _elm_lang$http$Http$emptyBody,
+				expect: _elm_lang$http$Http$expectJson(_user$project$Restaurants_Types$decodeRestaurantResponse),
+				timeout: _elm_lang$core$Maybe$Nothing,
+				withCredentials: false
+			});
+		return A2(_elm_lang$http$Http$send, _user$project$Restaurants_Types$DeleteResult, request);
+	});
 var _user$project$Restaurants_State$createRestaurant = F2(
 	function (restaurant, token) {
 		var body = _elm_lang$http$Http$jsonBody(
@@ -11726,7 +11734,7 @@ var _user$project$Restaurants_State$update = F2(
 					return {
 						ctor: '_Tuple2',
 						_0: model,
-						_1: _user$project$Restaurants_State$deleteRestaurant(_p2._0)
+						_1: A2(_user$project$Restaurants_State$deleteRestaurant, _p2._0, model.token)
 					};
 				} else {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
