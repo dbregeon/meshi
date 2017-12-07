@@ -26,7 +26,7 @@ config :logger, :console,
 
 config :ueberauth, Ueberauth,
   # hd option for google restricts the domain of the users.
-  providers: [google: {Ueberauth.Strategy.Google, [hd: System.get_env("USERS_DOMAIN")]}]
+  providers: [google: {Ueberauth.Strategy.Google, [default_scope: "email profile", hd: System.get_env("USERS_DOMAIN")]}]
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_CLIENT_ID"),
