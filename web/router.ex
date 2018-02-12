@@ -17,6 +17,7 @@ defmodule Meshi.Router do
     plug Guardian.Plug.VerifyHeader, realm: "Bearer"
     plug Guardian.Plug.VerifySession
     plug Guardian.Plug.LoadResource
+    plug :fetch_session
   end
 
   pipeline :slack do

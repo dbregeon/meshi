@@ -35,6 +35,5 @@ Ready to run in production? Please [check phoenix deployment guides](http://www.
 ## TODO
 
 * Add the Rating model in Phoenix.
-* Enforce login
 * Add tests.
 * Enrich slack dialog.

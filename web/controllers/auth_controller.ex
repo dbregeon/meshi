@@ -1,6 +1,7 @@
 defmodule Meshi.AuthController do
   use Meshi.Web, :controller
   plug Ueberauth
+  require Logger
 
   def delete(conn, _params) do
     conn

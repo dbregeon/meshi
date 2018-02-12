@@ -5,19 +5,30 @@ defmodule Meshi.RestaurantController do
   alias Meshi.Restaurant
 
   def index(conn, _params) do
-    restaurants = Repo.all(Restaurant)
+    import Ecto.Query, only: [from: 2]
 
-    render conn, "index.json", restaurants: restaurants
+    user_email = get_session(conn, :current_user).email
+
+    restaurants = Repo.all(Restaurant)
+    opinions =
+      Repo.all(from o in Meshi.Opinion, where: o.author == ^user_email)
+      |> Enum.map(fn [o] -> {o.restaurant_id, o} end)
+      |> Map.new
+    restaurants_with_opinion = restaurants |> Enum.map(fn(r) -> {r, Map.get(opinions, r.id)} end)
+
+    render conn, "index.json", restaurants_with_opinion: restaurants_with_opinion
   end
 
   def show(conn, %{"id" => id}) do
+    user = get_session(conn, :current_user)
     restaurant = Repo.get(Restaurant, String.to_integer(id))
+    opinion = Repo.get(Meshi.Opinion, Meshi.Opinion.id(user.email, id))
 
-    render conn, "show.json", restaurant: restaurant
+    render conn, "show.json", restaurant: restaurant, opinion: opinion
   end
 
   def create(conn, params) do
-    user = Meshi.Guardian.Plug.current_resource(conn)
+    user = get_session(conn, :current_user)
     changeset = Restaurant.changeset(%Restaurant{posted_on:  DateTime.utc_now, posted_by: user.email}, params)
     case Repo.insert(changeset) do
       {:ok, restaurant} ->

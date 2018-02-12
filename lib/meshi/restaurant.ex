@@ -4,6 +4,8 @@ defmodule Meshi.Restaurant do
   alias Meshi.Restaurant
 
   schema "restaurants" do
+    has_many :opinions, Meshi.Opinion
+
     field :name, :string
     field :posted_by, :string
     field :posted_on, :utc_datetime

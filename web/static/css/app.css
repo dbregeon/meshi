@@ -31,7 +31,11 @@
   height: 25%;
 }
 
-.restaurant-detail {
+.restaurant-create {
+  height: 25%;
+}
+
+.opinion-edit {
 }
 
 .restaurant-detail iframe {

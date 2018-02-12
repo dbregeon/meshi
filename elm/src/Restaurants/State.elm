@@ -19,8 +19,6 @@ update msg model =
       ( { model | restaurantList = restaurant :: model.restaurantList }, Cmd.none )
     Types.HideRestaurant restaurant ->
       ( { model | restaurantList = (List.filter (\r -> restaurant /= r) model.restaurantList), selectedRestaurant = Nothing }, Cmd.none )
-    Types.EditRestaurant restaurant ->
-      ( model, Cmd.none )
     Types.AddRestaurant ->
       ( { model | newRestaurant = (Just Types.emptyRestaurantForm) }, Cmd.none )
     Types.RemoveSelectedRestaurant ->
@@ -65,6 +63,24 @@ update msg model =
         Err error ->
           Debug.log (toString error)
           (model, Cmd.none)
+    Types.EditOpinion restaurant ->
+      ( { model | opinionForm = Just (Types.emptyOpinionForm restaurant.id)  }, Cmd.none )
+    Types.Update opinion newValue ->
+      let
+        newOpinion = Types.validateOpinionForm {opinion | opinion = {value = newValue, error = Nothing} }
+        newModel = {model | opinionForm = (Just newOpinion) }
+      in
+        case newOpinion.error of
+          Nothing -> (newModel, updateOpinion (newOpinion.value) model.token)
+          _ -> (newModel, Cmd.none)
+    Types.UpdateOpinionResult result ->
+      case result of
+        Ok opinion ->
+          ({ model | opinionForm = Nothing }, Cmd.none)
+        Err error ->
+          Debug.log (toString error)
+          (model, Cmd.none)
+
 
 createRestaurant : Types.RestaurantForm -> String -> Cmd Types.Msg
 createRestaurant restaurant token =
@@ -84,6 +100,25 @@ createRestaurant restaurant token =
     }
   in
     Http.send Types.CreateResult post
+
+updateOpinion : Types.OpinionForm -> String -> Cmd Types.Msg
+updateOpinion opinion token =
+  let
+    url = "/api/opinions"
+    body =
+      opinion
+      |> Types.encodeOpinion
+      |> Http.jsonBody
+    post =  Http.request { method = "POST"
+    , headers = [ Http.header "Authorization" ("Bearer " ++ token) ]
+    , url = url
+    , body = body
+    , expect = Http.expectJson Types.decodeOpinionResponse
+    , timeout = Nothing
+    , withCredentials = False
+    }
+  in
+    Http.send Types.UpdateOpinionResult post
 
 deleteRestaurant : Types.Restaurant -> String -> Cmd Types.Msg
 deleteRestaurant restaurant token =
